@@ -4,19 +4,23 @@
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1a1a2e">
+<script src="auth.js"></script>
 <script>
     // Registrar Service Worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js');
     }
     
-    // Verificar autenticação
-    (function() {
-        const sessao = localStorage.getItem('promptforge_session');
-        if (!sessao) {
-            window.location.href = 'index.html';
+    // Verificar autenticação SEMPRE
+    document.addEventListener('DOMContentLoaded', async function() {
+        const usuario = await verificarAutenticacao();
+        if (!usuario) {
+            // Já foi redirecionado pela função
+            return;
         }
-    })();
+        // Usuário válido, continua carregando o app
+        console.log('✅ Usuário autenticado:', usuario.nome);
+    });
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

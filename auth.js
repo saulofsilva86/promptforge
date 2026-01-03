@@ -1,5 +1,5 @@
 // ==================== AUTH.JS ====================
-// Sistema de Autenticação PromptForge
+// Sistema de Autenticação PromptForge - CORRIGIDO
 
 const AUTH_CONFIG = {
     // URL do seu Apps Script
@@ -8,40 +8,31 @@ const AUTH_CONFIG = {
     // Chave para armazenar sessão
     storageKey: 'promptforge_session',
     
-    // Tempo de verificação (em horas) - verifica novamente após X horas
-    verificarACada: 24
+    // IMPORTANTE: Sempre verificar no servidor a cada acesso
+    // Tempo 0 = sempre verifica
+    verificarACada: 0
 };
 
 // ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', function() {
-    // Verifica se já está logado
-    verificarSessaoExistente();
-    
-    // Configura formulário
-    const form = document.getElementById('loginForm');
-    if (form) {
+    // Se estiver na página de login
+    if (document.getElementById('loginForm')) {
+        // Verifica se já está logado
+        verificarSessaoExistente();
+        
+        // Configura formulário
+        const form = document.getElementById('loginForm');
         form.addEventListener('submit', fazerLogin);
     }
 });
 
 // ==================== VERIFICAR SESSÃO EXISTENTE ====================
-function verificarSessaoExistente() {
+async function verificarSessaoExistente() {
     const sessao = getSessao();
     
-    if (sessao) {
-        // Verifica se precisa revalidar
-        const agora = new Date().getTime();
-        const ultimaVerificacao = sessao.verificadoEm || 0;
-        const horasPassadas = (agora - ultimaVerificacao) / (1000 * 60 * 60);
-        
-        if (horasPassadas < AUTH_CONFIG.verificarACada) {
-            // Sessão válida, redireciona para o app
-            redirecionarParaApp();
-            return;
-        }
-        
-        // Revalidar sessão
-        revalidarSessao(sessao.email);
+    if (sessao && sessao.email) {
+        // SEMPRE revalida com o servidor
+        await revalidarSessao(sessao.email);
     }
 }
 
@@ -123,19 +114,65 @@ async function revalidarSessao(email) {
                 verificadoEm: new Date().getTime()
             });
             
-            // Redireciona
+            // Redireciona para o app
             redirecionarParaApp();
             
         } else {
-            // Sessão inválida, limpa e mostra erro
+            // BLOQUEADO ou EXPIRADO - limpa tudo e mostra erro
             limparSessao();
-            mostrarErro(data.erro || 'Sessão expirada. Faça login novamente.');
+            mostrarErro(data.erro || 'Acesso negado. Faça login novamente.');
         }
         
     } catch (error) {
-        // Erro de conexão, mas tem sessão local - permite acesso offline
-        console.warn('Erro ao revalidar, usando sessão local');
-        redirecionarParaApp();
+        // Erro de conexão - NÃO permite acesso offline
+        console.error('Erro ao revalidar:', error);
+        limparSessao();
+        mostrarErro('Erro de conexão. Verifique sua internet.');
+    }
+}
+
+// ==================== VERIFICAR AUTENTICAÇÃO (para app.html) ====================
+async function verificarAutenticacao() {
+    const sessao = getSessao();
+    
+    if (!sessao || !sessao.email) {
+        // Sem sessão, redireciona para login
+        window.location.href = 'index.html';
+        return null;
+    }
+    
+    // SEMPRE verifica no servidor se ainda está ativo
+    try {
+        const url = `${AUTH_CONFIG.apiUrl}?action=login&email=${encodeURIComponent(sessao.email)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.sucesso) {
+            // Atualiza sessão
+            salvarSessao({
+                email: data.usuario.email,
+                nome: data.usuario.nome,
+                tipo: data.usuario.tipo,
+                expira: data.usuario.expira,
+                verificadoEm: new Date().getTime()
+            });
+            return data.usuario;
+            
+        } else {
+            // BLOQUEADO - limpa e redireciona
+            limparSessao();
+            alert('❌ ' + (data.erro || 'Seu acesso foi revogado.'));
+            window.location.href = 'index.html';
+            return null;
+        }
+        
+    } catch (error) {
+        // Erro de conexão - bloqueia acesso
+        console.error('Erro ao verificar:', error);
+        limparSessao();
+        alert('❌ Erro de conexão. Faça login novamente.');
+        window.location.href = 'index.html';
+        return null;
     }
 }
 
@@ -148,8 +185,10 @@ function validarEmail(email) {
 
 function mostrarErro(mensagem) {
     const errorMsg = document.getElementById('errorMessage');
-    errorMsg.textContent = '❌ ' + mensagem;
-    errorMsg.classList.add('show');
+    if (errorMsg) {
+        errorMsg.textContent = '❌ ' + mensagem;
+        errorMsg.classList.add('show');
+    }
 }
 
 function salvarSessao(dados) {
@@ -169,25 +208,13 @@ function redirecionarParaApp() {
     window.location.href = 'app.html';
 }
 
-// ==================== FUNÇÕES GLOBAIS (para usar no app) ====================
-
-// Verificar se está autenticado (usar no app.html)
-function verificarAutenticacao() {
-    const sessao = getSessao();
-    if (!sessao) {
-        window.location.href = 'index.html';
-        return null;
-    }
-    return sessao;
-}
-
-// Fazer logout
+// ==================== LOGOUT ====================
 function fazerLogout() {
     limparSessao();
     window.location.href = 'index.html';
 }
 
-// Obter dados do usuário logado
+// ==================== OBTER USUÁRIO LOGADO ====================
 function getUsuarioLogado() {
     return getSessao();
 }
