@@ -1186,47 +1186,17 @@ function abrirNoGemini() {
         return;
     }
     
-    // Detecta se é mobile
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    // Copia primeiro
+    navigator.clipboard.writeText(state.currentPrompts.gemini).then(() => {
+        showToast('📋 Prompt copiado!');
+    });
     
-    if (isMobile) {
-        // MOBILE: Abre o link PRIMEIRO, depois copia
-        // (Isso evita o bloqueio de popup)
-        
-        // Cria link invisível e clica nele
-        const link = document.createElement('a');
-        link.href = 'https://gemini.google.com/app';
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        
-        // Copia o prompt
-        navigator.clipboard.writeText(state.currentPrompts.gemini).then(() => {
-            showToast('📋 Prompt copiado! Abrindo Gemini...');
-            
-            // Clica no link após copiar
-            setTimeout(() => {
-                link.click();
-                document.body.removeChild(link);
-            }, 500);
-            
-        }).catch(() => {
-            // Se não conseguir copiar, abre mesmo assim
-            link.click();
-            document.body.removeChild(link);
-            showToast('⚠️ Copie o prompt manualmente');
-        });
-        
-    } else {
-        // PC: funciona normal
-        navigator.clipboard.writeText(state.currentPrompts.gemini).then(() => {
-            window.open('https://gemini.google.com/app', '_blank');
-            showToast('📋 Prompt copiado! Cole no Gemini com Ctrl+V');
-        });
-    }
+    // Abre direto (sem confirm, sem setTimeout)
+    window.location.href = 'https://gemini.google.com/app';
 }
 
 // ==================== FIM DO APP.JS ====================
 
 console.log('📦 App.js carregado');
+
 
