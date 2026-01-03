@@ -1188,13 +1188,31 @@ function abrirNoGemini() {
     
     // Copia prompt automaticamente
     navigator.clipboard.writeText(state.currentPrompts.gemini).then(() => {
-        // Abre Gemini em nova aba
-        window.open('https://gemini.google.com/app', '_blank');
         
-        // Avisa usuário
-        showToast('📋 Prompt copiado! Cole no Gemini com Ctrl+V');
+        // Detecta se é mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // MOBILE: pergunta e redireciona
+            showToast('📋 Prompt copiado!');
+            
+            setTimeout(() => {
+                if (confirm('Prompt copiado! ✅\n\nAbrir o Gemini agora?')) {
+                    window.location.href = 'https://gemini.google.com/app';
+                }
+            }, 300);
+            
+        } else {
+            // PC: abre em nova aba
+            window.open('https://gemini.google.com/app', '_blank');
+            showToast('📋 Prompt copiado! Cole no Gemini com Ctrl+V');
+        }
+        
+    }).catch(() => {
+        showToast('❌ Erro ao copiar. Tente manualmente.');
     });
 }
 
 // ==================== FIM DO APP.JS ====================
+
 console.log('📦 App.js carregado');
