@@ -1186,33 +1186,47 @@ function abrirNoGemini() {
         return;
     }
     
-    // Copia prompt automaticamente
-    navigator.clipboard.writeText(state.currentPrompts.gemini).then(() => {
+    // Detecta se é mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // MOBILE: Abre o link PRIMEIRO, depois copia
+        // (Isso evita o bloqueio de popup)
         
-        // Detecta se é mobile
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        // Cria link invisível e clica nele
+        const link = document.createElement('a');
+        link.href = 'https://gemini.google.com/app';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
         
-        if (isMobile) {
-            // MOBILE: pergunta e redireciona
-            showToast('📋 Prompt copiado!');
+        // Copia o prompt
+        navigator.clipboard.writeText(state.currentPrompts.gemini).then(() => {
+            showToast('📋 Prompt copiado! Abrindo Gemini...');
             
+            // Clica no link após copiar
             setTimeout(() => {
-                if (confirm('Prompt copiado! ✅\n\nAbrir o Gemini agora?')) {
-                    window.location.href = 'https://gemini.google.com/app';
-                }
-            }, 300);
+                link.click();
+                document.body.removeChild(link);
+            }, 500);
             
-        } else {
-            // PC: abre em nova aba
+        }).catch(() => {
+            // Se não conseguir copiar, abre mesmo assim
+            link.click();
+            document.body.removeChild(link);
+            showToast('⚠️ Copie o prompt manualmente');
+        });
+        
+    } else {
+        // PC: funciona normal
+        navigator.clipboard.writeText(state.currentPrompts.gemini).then(() => {
             window.open('https://gemini.google.com/app', '_blank');
             showToast('📋 Prompt copiado! Cole no Gemini com Ctrl+V');
-        }
-        
-    }).catch(() => {
-        showToast('❌ Erro ao copiar. Tente manualmente.');
-    });
+        });
+    }
 }
 
 // ==================== FIM DO APP.JS ====================
 
 console.log('📦 App.js carregado');
+
