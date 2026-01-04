@@ -519,9 +519,10 @@
     <div class="top-bar">
         <div class="top-bar-inner">
             <nav class="app-nav">
-                <a href="app.html" class="nav-item">🎨 Estampas</a>
-                <a href="mockup.html" class="nav-item active">👕 Mockups</a>
-            </nav>
+    <a href="app.html" class="nav-item active">🎨 Estampas</a>
+    <a href="mockup.html" class="nav-item">👕 Mockups</a>
+    <a href="copy.html" class="nav-item">✍️ Copy</a>
+</nav>
             <div class="user-area">
                 <span class="user-greeting" id="userGreeting">Olá, Usuário</span>
                 <button class="btn-logout" onclick="confirmarLogout()">🚪 Sair</button>
@@ -1690,13 +1691,38 @@ function construirPrompt(variar = false) {
         prompt += `POSE: ${pose}\n`;
     }
     
+    // ========== CORREÇÃO: ÂNGULO BASEADO NA POSIÇÃO DA ESTAMPA ==========
+    let anguloFinal = angulo.en;
+    
+    // Se a estampa é nas costas, forçar ângulo de costas
+    if (state.posicao === 'costas') {
+        anguloFinal = 'back view rear, showing the back of the model';
+    }
+    // Se é combo (frente + costas), sugerir múltiplas vistas
+    else if (state.posicao === 'combo') {
+        anguloFinal = 'three quarter angle showing both front logo and hinting at back print';
+    }
+    // Se é manga, sugerir ângulo que mostre a manga
+    else if (state.posicao === 'manga') {
+        anguloFinal = 'angle showing the sleeve print clearly, arm visible';
+    }
+    
     // Fotografia
-    prompt += `CAMERA ANGLE: ${angulo.en}\n`;
+    prompt += `CAMERA ANGLE: ${anguloFinal}\n`;
     prompt += `LIGHTING: ${luz.en}\n`;
     prompt += `PHOTO STYLE: ${estilo.en}\n`;
     
-    // Instruções finais
-    prompt += `\nIMPORTANT: The print must be realistically integrated into the fabric, following natural wrinkles and body contours. Photorealistic quality, high resolution, professional mockup.`;
+    // Instruções finais - MELHORADAS
+    prompt += `\nIMPORTANT: `;
+    
+    // Instrução específica por posição
+    if (state.posicao === 'costas') {
+        prompt += `The model must be photographed FROM BEHIND, showing their back. `;
+    } else if (state.posicao === 'combo') {
+        prompt += `Show both the small front chest logo AND the large back print. `;
+    }
+    
+    prompt += `The print must be realistically integrated into the fabric, following natural wrinkles and body contours. Photorealistic quality, high resolution, professional mockup.`;
     
     return prompt;
 }

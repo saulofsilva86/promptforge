@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CopyForge - POD Tools</title>
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+    
+    <!-- Autenticação -->
+    <script src="auth.js"></script>
+    <script>
+        (function() {
+            const sessao = localStorage.getItem('promptforge_session');
+            if (!sessao) {
+                window.location.href = 'index.html';
+                return;
+            }
+            try {
+                const dados = JSON.parse(sessao);
+                if (!dados.email) {
+                    window.location.href = 'index.html';
+                }
+            } catch (e) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #f857a6;
+            --secondary: #00f260;
+            --accent: #0575e6;
+            --warning: #f5af19;
+            --bg: #1a1a2e;
+            --bg-card: rgba(255,255,255,0.05);
+            --bg-input: rgba(0,0,0,0.3);
+            --text: #ffffff;
+            --text-dim: #888;
+            --border: rgba(255,255,255,0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #16213e 100%);
+            min-height: 100vh;
+            color: var(--text);
+            padding: 0;
+            padding-bottom: 100px;
+        }
+        
+        /* ========== NAVEGAÇÃO ========== */
+        .top-bar {
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            backdrop-filter: blur(10px);
+        }
+        
+        .top-bar-inner {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .app-nav { display: flex; gap: 4px; }
+        
+        .nav-item {
+            padding: 8px 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .nav-item:hover { color: var(--text); background: var(--bg-card); }
+        
+        .nav-item.active {
+            color: var(--warning);
+            background: rgba(245,175,25,0.1);
+            border-color: rgba(245,175,25,0.3);
+        }
+        
+        .user-area { display: flex; align-items: center; gap: 8px; }
+        .user-greeting { font-size: 0.75rem; color: var(--text-dim); display: none; }
+        @media (min-width: 480px) { .user-greeting { display: block; } }
+        
+        .btn-logout {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover { border-color: #ff5858; color: #ff5858; }
+        
+        /* ========== CONTAINER ========== */
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        
+        /* ========== HEADER ========== */
+        .header { text-align: center; padding: 15px 0 20px; }
+        .header .logo { font-size: 2.5rem; }
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, var(--warning), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header p { color: var(--text-dim); font-size: 0.9rem; }
+        .header .version {
+            display: inline-block;
+            background: var(--warning);
+            color: var(--bg);
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        /* ========== STICKY CONFIRM ========== */
+        .sticky-confirm {
+            position: sticky;
+            top: 55px;
+            z-index: 100;
+            background: linear-gradient(135deg, #2d1f3d, var(--bg));
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sticky-confirm.confirmed {
+            border-color: var(--secondary);
+            background: linear-gradient(135deg, #1a2e1a, var(--bg));
+        }
+        .sticky-confirm input { width: 20px; height: 20px; accent-color: var(--secondary); }
+        .sticky-confirm label { font-size: 0.85rem; cursor: pointer; flex: 1; }
+        .sticky-confirm .icon { font-size: 1.3rem; }
+        
+        /* ========== SEÇÕES ========== */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        .section-header:hover { background: rgba(255,255,255,0.02); }
+        .section-header .arrow { transition: transform 0.3s; }
+        .section.open .arrow { transform: rotate(180deg); }
+        .section-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .section.open .section-content { max-height: 3000px; }
+        .section-inner { padding: 0 15px 15px; }
+        
+        /* ========== FORMS ========== */
+        .form-group { margin-bottom: 18px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--warning);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        /* ========== GRIDS ========== */
+        .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .options-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .options-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .options-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+        .options-grid.cols-6 { grid-template-columns: repeat(6, 1fr); }
+        
+        .opt {
+            padding: 12px 8px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-input);
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .opt:hover { border-color: var(--primary); }
+        .opt.selected { border-color: var(--secondary); background: rgba(0,242,96,0.15); }
+        .opt .icon { display: block; font-size: 1.2rem; margin-bottom: 3px; }
+        
+        .color-opt {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-opt:hover { transform: scale(1.1); }
+        .color-opt.selected { border-color: var(--secondary); box-shadow: 0 0 10px rgba(0,242,96,0.4); }
+        
+        /* ========== INPUTS ========== */
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--secondary); }
+        select option { background: var(--bg); }
+        input::placeholder, textarea::placeholder { color: #666; }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        .hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 6px; }
+        .hint .bulb { color: var(--warning); }
+        
+        /* ========== TOGGLE TEMA ========== */
+        .tema-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .toggle-opt {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-input);
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toggle-opt:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+        
+        .toggle-opt.active {
+            border-color: var(--secondary);
+            background: rgba(0,242,96,0.15);
+            color: var(--secondary);
+        }
+        
+        .imagem-info {
+            display: flex;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(245,175,25,0.1);
+            border: 2px dashed var(--warning);
+            border-radius: 10px;
+            align-items: flex-start;
+        }
+        
+        .imagem-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+        
+        .imagem-texto strong {
+            display: block;
+            color: var(--warning);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .imagem-texto p {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+        
+        /* ========== BOTÕES ========== */
+        .actions { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
+        .btn {
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: linear-gradient(135deg, var(--warning), var(--primary)); color: var(--bg); }
+        .btn-primary:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(245,175,25,0.3); }
+        
+        /* ========== RESULTADO ========== */
+        .result {
+            background: var(--bg-card);
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .result.show { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        .result h3 { color: var(--warning); margin-bottom: 12px; font-size: 1rem; }
+        
+        .prompt-box {
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #ddd;
+            border-left: 3px solid var(--warning);
+            max-height: 300px;
+            overflow-y: auto;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .result-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .result-actions button {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .btn-copy { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-gemini { background: linear-gradient(135deg, #4285f4, #34a853); color: white; }
+        .btn-fav { background: var(--bg-input); border: 2px solid var(--warning) !important; color: var(--warning); }
+        
+        /* ========== TABS ========== */
+        .tabs { margin-top: 25px; }
+        .tabs-header { display: flex; border-bottom: 2px solid var(--border); overflow-x: auto; }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .tab-btn.active { color: var(--warning); }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--warning);
+        }
+        .tab-btn .count {
+            background: var(--bg-input);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+        .tab-content.active { display: block; }
+        
+        /* ========== ITENS SALVOS ========== */
+        .saved-item {
+            background: var(--bg-input);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .saved-item-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .saved-item-name { font-weight: 600; font-size: 0.9rem; }
+        .saved-item-date { font-size: 0.7rem; color: var(--text-dim); }
+        .saved-item-preview {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .saved-item-actions { display: flex; gap: 6px; }
+        .saved-item-actions button {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .saved-item-actions button:hover { border-color: var(--warning); color: var(--warning); }
+        .saved-item-actions .del:hover { border-color: #ff5858; color: #ff5858; }
+        
+        .empty { text-align: center; padding: 30px; color: var(--text-dim); }
+        .empty .icon { font-size: 2rem; margin-bottom: 10px; opacity: 0.5; }
+        
+        .export-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .export-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--warning);
+            color: var(--bg);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.error { background: #ff5858; color: white; }
+        
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            padding: 20px;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--bg);
+            border-radius: 15px;
+            padding: 25px;
+            width: 100%;
+            max-width: 350px;
+        }
+        .modal h3 { color: var(--warning); margin-bottom: 15px; text-align: center; }
+        .modal input { margin-bottom: 15px; }
+        .modal-btns { display: flex; gap: 10px; }
+        .modal-btns button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .modal-cancel { background: var(--bg-input); color: var(--text-dim); }
+        .modal-save { background: var(--warning); color: var(--bg); }
+        
+        footer { text-align: center; padding: 20px; color: #666; font-size: 0.8rem; }
+        .hidden { display: none !important; }
+        
+        @media (max-width: 400px) {
+            .options-grid.cols-4, .options-grid.cols-5 { grid-template-columns: repeat(3, 1fr); }
+            .options-grid.cols-6 { grid-template-columns: repeat(4, 1fr); }
+            .nav-item { padding: 6px 8px; font-size: 0.7rem; }
+            .top-bar { padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- BARRA DE NAVEGAÇÃO -->
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <nav class="app-nav">
+                <a href="app.html" class="nav-item">🎨 Estampas</a>
+                <a href="mockup.html" class="nav-item">👕 Mockups</a>
+                <a href="copy.html" class="nav-item active">✍️ Copy</a>
+            </nav>
+            <div class="user-area">
+                <span class="user-greeting" id="userGreeting">Olá, Usuário</span>
+                <button class="btn-logout" onclick="confirmarLogout()">🚪 Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">✍️</div>
+            <h1>CopyForge</h1>
+            <p>Copy profissional com neuromarketing</p>
+            <span class="version">v1.0</span>
+        </header>
+
+        <div class="sticky-confirm" id="stickyConfirm">
+            <span class="icon">📷</span>
+            <input type="checkbox" id="confirmCheck">
+            <label for="confirmCheck">Já anexei a imagem do mockup na IA</label>
+        </div>
+
+        <!-- SEÇÃO 1: PRODUTO -->
+        <section class="section open" id="secProduto">
+            <div class="section-header" onclick="toggleSection('secProduto')">
+                <span>📦 Produto</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="form-group">
+                        <label>🎯 Nicho</label>
+                        <div class="options-grid cols-4" id="gridNicho"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>👕 Tipo de Produto</label>
+                        <div class="options-grid" id="gridProduto"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>🎨 Cor Principal</label>
+                        <div class="options-grid cols-6" id="gridCor"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>✏️ Tema/Texto da Estampa</label>
+                        
+                        <!-- Toggle de opção -->
+                        <div class="tema-toggle">
+                            <button type="button" class="toggle-opt active" id="btnTemaManual" onclick="toggleTema('manual')">
+                                ✏️ Descrever
+                            </button>
+                            <button type="button" class="toggle-opt" id="btnTemaImagem" onclick="toggleTema('imagem')">
+                                📷 Usar Imagem
+                            </button>
+                        </div>
+                        
+                        <!-- Opção 1: Descrição manual -->
+                        <div id="temaManual">
+                            <textarea id="txtTema" placeholder="Descreva a estampa... Ex: Frase 'Mas primeiro, café' com ilustração de xícara fumegante"></textarea>
+                            <p class="hint"><span class="bulb">💡</span> Quanto mais detalhes, melhor a copy!</p>
+                        </div>
+                        
+                        <!-- Opção 2: Usar imagem -->
+                        <div id="temaImagem" class="hidden">
+                            <div class="imagem-info">
+                                <span class="imagem-icon">🖼️</span>
+                                <div class="imagem-texto">
+                                    <strong>A IA vai analisar a imagem do mockup</strong>
+                                    <p>Anexe o mockup no Gemini junto com o prompt. A IA vai identificar automaticamente o tema, texto e elementos da estampa.</p>
+                                </div>
+                            </div>
+                            <p class="hint"><span class="bulb">💡</span> Ideal quando a estampa tem muitos detalhes visuais!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: PÚBLICO-ALVO -->
+        <section class="section open" id="secPublico">
+            <div class="section-header" onclick="toggleSection('secPublico')">
+                <span>👥 Público-Alvo</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="form-group">
+                        <label>👤 Gênero</label>
+                        <div class="options-grid" id="gridGenero"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Faixa Etária</label>
+                        <div class="options-grid" id="gridIdade"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>💰 Perfil de Consumo</label>
+                        <div class="options-grid" id="gridPerfil"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: ESTILO DA COPY -->
+        <section class="section open" id="secEstilo">
+            <div class="section-header" onclick="toggleSection('secEstilo')">
+                <span>✍️ Estilo da Copy</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="form-group">
+                        <label>🎭 Tom de Voz</label>
+                        <div class="options-grid" id="gridTom"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>🔥 Gatilho Mental Principal</label>
+                        <div class="options-grid cols-2" id="gridGatilho"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>🎁 Ocasião/Uso</label>
+                        <div class="options-grid" id="gridOcasiao"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 4: MARKETPLACE -->
+        <section class="section open" id="secMarketplace">
+            <div class="section-header" onclick="toggleSection('secMarketplace')">
+                <span>🏪 Marketplace</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="form-group">
+                        <label>📍 Plataforma</label>
+                        <div class="options-grid" id="gridPlataforma"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOTÃO GERAR -->
+        <div class="actions">
+            <button class="btn btn-primary" id="btnGerar" onclick="gerarPrompt()" disabled>
+                🚀 Gerar Prompt de Copy
+            </button>
+        </div>
+
+        <!-- RESULTADO -->
+        <div class="result" id="resultado"></div>
+
+        <!-- TABS: HISTÓRICO E FAVORITOS -->
+        <div class="tabs">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('historico')">
+                    📜 Histórico <span class="count" id="countHist">0</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('favoritos')">
+                    ⭐ Favoritos <span class="count" id="countFav">0</span>
+                </button>
+            </div>
+            <div class="tab-content active" id="tabHistorico"></div>
+            <div class="tab-content" id="tabFavoritos">
+                <div id="listaFavoritos"></div>
+                <button class="export-btn" id="btnExport" onclick="exportarFavoritos()" disabled>
+                    📤 Exportar (.txt)
+                </button>
+            </div>
+        </div>
+
+        <footer>✍️ CopyForge v1.0 - POD Tools</footer>
+    </div>
+
+    <!-- MODAL FAVORITOS -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h3>⭐ Salvar Favorito</h3>
+            <input type="text" id="inputNomeFav" placeholder="Nome do favorito...">
+            <div class="modal-btns">
+                <button class="modal-cancel" onclick="fecharModal()">Cancelar</button>
+                <button class="modal-save" onclick="salvarFavorito()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+
+// ========== BANCO DE DADOS COMPLETO ==========
+const DATA = {
+    nichos: [
+        { id: 'tenis', nome: 'Tênis', icon: '🎾', keywords: 'tennis, tenis, raquete, quadra, esporte' },
+        { id: 'surf', nome: 'Surf', icon: '🏄', keywords: 'surf, praia, onda, surfista, mar' },
+        { id: 'fitness', nome: 'Fitness', icon: '💪', keywords: 'fitness, academia, treino, gym, musculação' },
+        { id: 'futebol', nome: 'Futebol', icon: '⚽', keywords: 'futebol, bola, gol, torcedor, craque' },
+        { id: 'skate', nome: 'Skate', icon: '🛹', keywords: 'skate, skatista, manobra, street, radical' },
+        { id: 'musica', nome: 'Música', icon: '🎸', keywords: 'música, rock, banda, violão, guitarra' },
+        { id: 'cafe', nome: 'Café', icon: '☕', keywords: 'café, coffee, barista, cafeína, expresso' },
+        { id: 'cerveja', nome: 'Cerveja', icon: '🍺', keywords: 'cerveja, beer, chopp, lúpulo, craft' },
+        { id: 'pets', nome: 'Pets', icon: '🐕', keywords: 'cachorro, dog, pet, cão, animal' },
+        { id: 'gatos', nome: 'Gatos', icon: '🐱', keywords: 'gato, cat, felino, gatinho, miau' },
+        { id: 'viagem', nome: 'Viagem', icon: '✈️', keywords: 'viagem, travel, aventura, mochileiro, mundo' },
+        { id: 'natureza', nome: 'Natureza', icon: '🌿', keywords: 'natureza, eco, verde, sustentável, planta' },
+        { id: 'games', nome: 'Games', icon: '🎮', keywords: 'gamer, jogo, videogame, player, nerd' },
+        { id: 'tech', nome: 'Tech', icon: '💻', keywords: 'tecnologia, programador, dev, código, ti' },
+        { id: 'gospel', nome: 'Gospel', icon: '✝️', keywords: 'cristão, fé, jesus, gospel, religião' },
+        { id: 'carros', nome: 'Carros', icon: '🏎️', keywords: 'carro, auto, velocidade, motor, corrida' },
+        { id: 'motos', nome: 'Motos', icon: '🏍️', keywords: 'moto, motociclista, biker, estrada, liberdade' },
+        { id: 'churrasco', nome: 'Churrasco', icon: '🥩', keywords: 'churrasco, carne, bbq, churrasqueiro, picanha' },
+        { id: 'pesca', nome: 'Pesca', icon: '🎣', keywords: 'pesca, pescador, anzol, rio, peixe' },
+        { id: 'gastronomia', nome: 'Gastro', icon: '🍕', keywords: 'comida, chef, gastronomia, cozinha, receita' },
+        { id: 'livros', nome: 'Livros', icon: '📚', keywords: 'livro, leitura, leitor, literatura, book' },
+        { id: 'yoga', nome: 'Yoga', icon: '🧘', keywords: 'yoga, meditação, zen, equilíbrio, paz' },
+        { id: 'crossfit', nome: 'CrossFit', icon: '🏋️', keywords: 'crossfit, wod, box, treino, atleta' },
+        { id: 'signos', nome: 'Signos', icon: '♌', keywords: 'signo, zodíaco, astrologia, horóscopo, astral' },
+        { id: 'profissoes', nome: 'Profissões', icon: '💼', keywords: 'profissão, trabalho, carreira, orgulho, profissional' },
+        { id: 'outro', nome: 'Outro', icon: '✨', keywords: 'criativo, único, especial, personalizado' }
+    ],
+
+    produtos: [
+        { id: 'camiseta', nome: 'Camiseta', icon: '👕', en: 't-shirt' },
+        { id: 'babylook', nome: 'Babylook', icon: '👚', en: 'women fitted t-shirt' },
+        { id: 'regata', nome: 'Regata', icon: '🎽', en: 'tank top' },
+        { id: 'moletom', nome: 'Moletom', icon: '🧥', en: 'hoodie sweatshirt' },
+        { id: 'caneca', nome: 'Caneca', icon: '☕', en: 'ceramic mug' },
+        { id: 'ecobag', nome: 'Ecobag', icon: '🛍️', en: 'tote bag' }
+    ],
+
+    cores: [
+        { id: 'branco', nome: 'Branco', hex: '#FFFFFF', light: true },
+        { id: 'preto', nome: 'Preto', hex: '#1a1a1a', light: false },
+        { id: 'cinza', nome: 'Cinza', hex: '#6B7280', light: false },
+        { id: 'azul', nome: 'Azul', hex: '#1e3a5f', light: false },
+        { id: 'vermelho', nome: 'Vermelho', hex: '#dc2626', light: false },
+        { id: 'verde', nome: 'Verde', hex: '#166534', light: false },
+        { id: 'amarelo', nome: 'Amarelo', hex: '#ca8a04', light: false },
+        { id: 'rosa', nome: 'Rosa', hex: '#f9a8d4', light: true },
+        { id: 'roxo', nome: 'Roxo', hex: '#7c3aed', light: false },
+        { id: 'laranja', nome: 'Laranja', hex: '#ea580c', light: false },
+        { id: 'marrom', nome: 'Marrom', hex: '#78350f', light: false },
+        { id: 'bege', nome: 'Bege', hex: '#d4c5a9', light: true }
+    ],
+
+    generos: [
+        { id: 'masculino', nome: 'Masculino', icon: '👨' },
+        { id: 'feminino', nome: 'Feminino', icon: '👩' },
+        { id: 'unissex', nome: 'Unissex', icon: '👥' }
+    ],
+
+    idades: [
+        { id: 'jovem', nome: '18-25', icon: '🧑', desc: 'jovens adultos' },
+        { id: 'adulto', nome: '26-40', icon: '👨', desc: 'adultos' },
+        { id: 'maduro', nome: '40+', icon: '🧔', desc: 'adultos maduros' },
+        { id: 'todos', nome: 'Todas', icon: '👨‍👩‍👧‍👦', desc: 'todas as idades' }
+    ],
+
+    perfis: [
+        { id: 'economico', nome: 'Econômico', icon: '💵', desc: 'busca preço baixo' },
+        { id: 'medio', nome: 'Médio', icon: '💳', desc: 'busca custo-benefício' },
+        { id: 'premium', nome: 'Premium', icon: '💎', desc: 'busca qualidade e exclusividade' }
+    ],
+
+    tons: [
+        { id: 'divertido', nome: 'Divertido', icon: '😄', desc: 'humor, leve, descontraído' },
+        { id: 'profissional', nome: 'Profissional', icon: '💼', desc: 'sério, confiável, técnico' },
+        { id: 'emotivo', nome: 'Emotivo', icon: '❤️', desc: 'emocional, sensível, tocante' },
+        { id: 'ousado', nome: 'Ousado', icon: '🔥', desc: 'provocativo, marcante, direto' },
+        { id: 'minimalista', nome: 'Minimalista', icon: '✨', desc: 'simples, clean, objetivo' }
+    ],
+
+    gatilhos: [
+        { id: 'escassez', nome: 'Escassez', icon: '⏳', desc: 'estoque limitado, edição especial', palavras: 'últimas unidades, edição limitada, enquanto durar' },
+        { id: 'urgencia', nome: 'Urgência', icon: '⚡', desc: 'tempo limitado, promoção relâmpago', palavras: 'só hoje, últimas horas, promoção relâmpago' },
+        { id: 'exclusividade', nome: 'Exclusividade', icon: '👑', desc: 'único, premium, especial', palavras: 'exclusivo, único, premium, você merece' },
+        { id: 'novidade', nome: 'Novidade', icon: '🆕', desc: 'lançamento, novo, tendência', palavras: 'lançamento, novidade, acabou de chegar, tendência' },
+        { id: 'identificacao', nome: 'Identificação', icon: '🎯', desc: 'pertencimento, tribo, comunidade', palavras: 'feito para quem, se você é, para verdadeiros' },
+        { id: 'prova_social', nome: 'Prova Social', icon: '⭐', desc: 'mais vendido, favorito, aprovado', palavras: 'mais vendida, favorita, aprovada, sucesso de vendas' }
+    ],
+
+    ocasioes: [
+        { id: 'uso_proprio', nome: 'Uso Próprio', icon: '🙋', desc: 'para si mesmo' },
+        { id: 'presente', nome: 'Presente', icon: '🎁', desc: 'para presentear alguém' },
+        { id: 'dia_pais', nome: 'Dia dos Pais', icon: '👨', desc: 'presente para pai' },
+        { id: 'dia_maes', nome: 'Dia das Mães', icon: '👩', desc: 'presente para mãe' },
+        { id: 'namorados', nome: 'Namorados', icon: '💑', desc: 'presente romântico' },
+        { id: 'aniversario', nome: 'Aniversário', icon: '🎂', desc: 'presente de aniversário' },
+        { id: 'natal', nome: 'Natal', icon: '🎄', desc: 'presente de natal' },
+        { id: 'amigo_secreto', nome: 'Amigo Secreto', icon: '🎅', desc: 'amigo oculto' },
+        { id: 'formatura', nome: 'Formatura', icon: '🎓', desc: 'presente de formatura' }
+    ],
+
+    plataformas: [
+        { id: 'mercadolivre', nome: 'Mercado Livre', icon: '🟡', limites: { titulo: 60, descricao: 5000 }, dicas: 'Títulos objetivos, use palavras-chave no início' },
+        { id: 'shopee', nome: 'Shopee', icon: '🟠', limites: { titulo: 120, descricao: 3000 }, dicas: 'Emojis funcionam bem, destaque frete grátis' },
+        { id: 'amazon', nome: 'Amazon', icon: '📦', limites: { titulo: 200, descricao: 2000 }, dicas: 'Bullet points são essenciais, seja técnico' },
+        { id: 'elo7', nome: 'Elo7', icon: '🎨', limites: { titulo: 140, descricao: 5000 }, dicas: 'Valorize o artesanal e exclusivo' },
+        { id: 'loja_propria', nome: 'Loja Própria', icon: '🏪', limites: { titulo: 100, descricao: 10000 }, dicas: 'Sem limites rígidos, foque em SEO' }
+    ],
+
+    tecnicasPorTom: {
+        divertido: {
+            aberturas: [
+                'Confessa: você também...',
+                'Só quem entende, entende! 😄',
+                'Aviso: pode causar inveja nos amigos!',
+                'Cuidado! Essa camiseta é altamente viciante',
+                'Se você riu, já sabe que precisa!'
+            ],
+            ctas: [
+                'Bora garantir a sua? 🚀',
+                'Partiu arrasar? Clica aí!',
+                'Adiciona no carrinho antes que a razão volte!',
+                'Tá esperando o quê? Vai lá!'
+            ]
+        },
+        profissional: {
+            aberturas: [
+                'Qualidade que você merece',
+                'Desenvolvido para quem exige o melhor',
+                'Performance e estilo em uma peça única',
+                'A escolha certa para quem valoriza qualidade'
+            ],
+            ctas: [
+                'Adquira agora',
+                'Garanta a sua',
+                'Compre com segurança',
+                'Faça seu pedido'
+            ]
+        },
+        emotivo: {
+            aberturas: [
+                'Mais que uma camiseta, uma declaração de amor',
+                'Para quem vive essa paixão todos os dias',
+                'Porque algumas coisas a gente sente no coração',
+                'Vista o que você ama ❤️'
+            ],
+            ctas: [
+                'Leve um pedacinho desse amor com você',
+                'Eternize esse sentimento',
+                'Presenteie quem você ama',
+                'Transforme sentimento em estilo'
+            ]
+        },
+        ousado: {
+            aberturas: [
+                'Não é pra qualquer um. É pra você.',
+                'Enquanto uns seguem, outros lideram.',
+                'Estampa pra quem não tem medo de aparecer',
+                'Seja impossível de ignorar 🔥'
+            ],
+            ctas: [
+                'Assuma sua atitude. Compre agora.',
+                'Destaque-se. Garanta a sua.',
+                'Marque presença. Adicione ao carrinho.',
+                'Mostre quem manda. Leve a sua.'
+            ]
+        },
+        minimalista: {
+            aberturas: [
+                'Simples. Direto. Você.',
+                'Menos é mais.',
+                'Essencial.',
+                'O básico que fala por si.'
+            ],
+            ctas: [
+                'Comprar',
+                'Adicionar ao carrinho',
+                'Garantir',
+                'Levar'
+            ]
+        }
+    },
+
+    beneficiosPorProduto: {
+        camiseta: [
+            '100% algodão premium',
+            'Estampa que não desbota',
+            'Impressão DTF de alta definição',
+            'Tecido macio e confortável',
+            'Costuras reforçadas',
+            'Modelagem regular fit',
+            'Gola careca que não deforma'
+        ],
+        babylook: [
+            '100% algodão',
+            'Modelagem feminina valorizada',
+            'Tecido leve e respirável',
+            'Estampa duradoura',
+            'Caimento perfeito no corpo',
+            'Gola suave que não marca'
+        ],
+        regata: [
+            'Tecido leve e fresco',
+            'Ideal para dias quentes',
+            '100% algodão',
+            'Estampa resistente',
+            'Corte confortável'
+        ],
+        moletom: [
+            'Tecido flanelado por dentro',
+            'Capuz com ajuste de cordão',
+            'Bolso canguru frontal',
+            'Estampa de alta qualidade',
+            'Punhos e barra com ribana',
+            'Quentinho e estiloso'
+        ],
+        caneca: [
+            'Cerâmica de alta qualidade',
+            'Estampa que não sai na lava-louças',
+            'Capacidade 325ml',
+            'Cores vibrantes',
+            'Presente perfeito'
+        ],
+        ecobag: [
+            'Tecido resistente',
+            'Sustentável e reutilizável',
+            'Estampa duradoura',
+            'Alças reforçadas',
+            'Espaçosa e prática'
+        ]
+    },
+
+    especificacoes: {
+        camiseta: 'Material: 100% Algodão penteado | Gramatura: 160g/m² | Impressão: DTF | Modelagem: Regular Fit | Gola: Careca reforçada | Tamanhos: P ao GG',
+        babylook: 'Material: 100% Algodão | Gramatura: 150g/m² | Impressão: DTF | Modelagem: Babylook | Gola: Careca | Tamanhos: P ao GG',
+        regata: 'Material: 100% Algodão | Gramatura: 150g/m² | Impressão: DTF | Modelagem: Regular | Tamanhos: P ao GG',
+        moletom: 'Material: Moletom flanelado | Gramatura: 280g/m² | Impressão: DTF | Capuz: Com cordão | Bolso: Canguru | Tamanhos: P ao GG',
+        caneca: 'Material: Cerâmica AAA | Capacidade: 325ml | Impressão: Sublimação | Pode ir na lava-louças | Pode ir no micro-ondas',
+        ecobag: 'Material: Algodão cru | Dimensões: 35x40cm | Impressão: Serigrafia | Alças: 30cm | Capacidade: 10kg'
+    }
+};
+
+// ========== ESTADO ==========
+let state = {
+    nicho: null,
+    produto: null,
+    cor: null,
+    tema: '',
+    genero: null,
+    idade: null,
+    perfil: null,
+    tom: null,
+    gatilho: null,
+    ocasiao: null,
+    plataforma: null
+};
+
+let temaMode = 'manual';
+let promptAtual = '';
+let historico = JSON.parse(localStorage.getItem('cf_hist') || '[]');
+let favoritos = JSON.parse(localStorage.getItem('cf_fav') || '[]');
+
+// ========== INICIALIZAÇÃO ==========
+document.addEventListener('DOMContentLoaded', init);
+
+function init() {
+    renderGrid('gridNicho', DATA.nichos, 'nicho');
+    renderGrid('gridProduto', DATA.produtos, 'produto');
+    renderCores();
+    renderGrid('gridGenero', DATA.generos, 'genero');
+    renderGrid('gridIdade', DATA.idades, 'idade');
+    renderGrid('gridPerfil', DATA.perfis, 'perfil');
+    renderGrid('gridTom', DATA.tons, 'tom');
+    renderGrid('gridGatilho', DATA.gatilhos, 'gatilho');
+    renderGrid('gridOcasiao', DATA.ocasioes, 'ocasiao');
+    renderGrid('gridPlataforma', DATA.plataformas, 'plataforma');
+    atualizarTabs();
+    exibirUsuarioLogado();
+
+    document.getElementById('confirmCheck').addEventListener('change', function() {
+        document.getElementById('stickyConfirm').classList.toggle('confirmed', this.checked);
+        checkBotao();
+    });
+    
+    document.getElementById('txtTema').addEventListener('input', function() {
+        state.tema = this.value;
+        checkBotao();
+    });
+}
+
+// ========== TOGGLE TEMA ==========
+function toggleTema(mode) {
+    temaMode = mode;
+    
+    document.getElementById('btnTemaManual').classList.toggle('active', mode === 'manual');
+    document.getElementById('btnTemaImagem').classList.toggle('active', mode === 'imagem');
+    
+    document.getElementById('temaManual').classList.toggle('hidden', mode === 'imagem');
+    document.getElementById('temaImagem').classList.toggle('hidden', mode === 'manual');
+    
+    if (mode === 'imagem') {
+        state.tema = '[ANALISAR IMAGEM]';
+    } else {
+        state.tema = document.getElementById('txtTema').value;
+    }
+    
+    checkBotao();
+}
+
+// ========== AUTENTICAÇÃO ==========
+function exibirUsuarioLogado() {
+    try {
+        const sessao = JSON.parse(localStorage.getItem('promptforge_session') || '{}');
+        if (sessao.nome) {
+            const primeiroNome = sessao.nome.split(' ')[0];
+            document.getElementById('userGreeting').textContent = `Olá, ${primeiroNome}`;
+        }
+    } catch (e) {
+        console.log('Erro ao exibir usuário:', e);
+    }
+}
+
+function confirmarLogout() {
+    if (confirm('Deseja realmente sair?')) {
+        localStorage.removeItem('promptforge_session');
+        window.location.href = 'index.html';
+    }
+}
+
+// ========== RENDERIZAÇÃO ==========
+function renderGrid(id, items, campo) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = items.map(item => `
+        <div class="opt" data-id="${item.id}" onclick="selecionar('${campo}', '${item.id}')">
+            <span class="icon">${item.icon}</span>
+            <span>${item.nome}</span>
+        </div>
+    `).join('');
+}
+
+function renderCores() {
+    const el = document.getElementById('gridCor');
+    el.innerHTML = DATA.cores.map(c => `
+        <div class="color-opt" data-id="${c.id}" 
+             style="background:${c.hex};${c.light ? 'border:1px solid #999;' : ''}"
+             onclick="selecionar('cor', '${c.id}')"
+             title="${c.nome}"></div>
+    `).join('');
+}
+
+// ========== SELEÇÃO ==========
+function selecionar(campo, valor) {
+    state[campo] = valor;
+    
+    const gridMap = {
+        nicho: 'gridNicho',
+        produto: 'gridProduto',
+        cor: 'gridCor',
+        genero: 'gridGenero',
+        idade: 'gridIdade',
+        perfil: 'gridPerfil',
+        tom: 'gridTom',
+        gatilho: 'gridGatilho',
+        ocasiao: 'gridOcasiao',
+        plataforma: 'gridPlataforma'
+    };
+    
+    const gridId = gridMap[campo];
+    if (gridId) {
+        const container = document.getElementById(gridId);
+        if (container) {
+            container.querySelectorAll('.opt, .color-opt').forEach(el => {
+                el.classList.toggle('selected', el.dataset.id === valor);
+            });
+        }
+    }
+    
+    checkBotao();
+}
+
+// ========== UI HELPERS ==========
+function toggleSection(id) {
+    document.getElementById(id).classList.toggle('open');
+}
+
+function checkBotao() {
+    const confirmed = document.getElementById('confirmCheck').checked;
+    const temaValido = temaMode === 'imagem' || (state.tema && state.tema.trim().length > 0);
+    
+    const pronto = confirmed && 
+                   state.nicho && 
+                   state.produto && 
+                   state.cor && 
+                   temaValido &&
+                   state.genero && 
+                   state.idade && 
+                   state.perfil &&
+                   state.tom && 
+                   state.gatilho && 
+                   state.ocasiao &&
+                   state.plataforma;
+    
+    document.getElementById('btnGerar').disabled = !pronto;
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+function atualizarTabs() {
+    document.getElementById('countHist').textContent = historico.length;
+    document.getElementById('countFav').textContent = favoritos.length;
+    
+    const histEl = document.getElementById('tabHistorico');
+    if (historico.length === 0) {
+        histEl.innerHTML = '<div class="empty"><div class="icon">📜</div><p>Nenhum prompt gerado</p></div>';
+    } else {
+        histEl.innerHTML = historico.slice().reverse().map((item, i) => `
+            <div class="saved-item">
+                <div class="saved-item-header">
+                    <span class="saved-item-name">Prompt #${historico.length - i}</span>
+                    <span class="saved-item-date">${item.data}</span>
+                </div>
+                <div class="saved-item-preview">${item.prompt.substring(0, 100)}...</div>
+                <div class="saved-item-actions">
+                    <button onclick="copiarTexto(\`${encodeURIComponent(item.prompt)}\`)">📋 Copiar</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    const favEl = document.getElementById('listaFavoritos');
+    if (favoritos.length === 0) {
+        favEl.innerHTML = '<div class="empty"><div class="icon">⭐</div><p>Nenhum favorito</p></div>';
+    } else {
+        favEl.innerHTML = favoritos.map((item, i) => `
+            <div class="saved-item">
+                <div class="saved-item-header">
+                    <span class="saved-item-name">${item.nome}</span>
+                    <span class="saved-item-date">${item.data}</span>
+                </div>
+                <div class="saved-item-preview">${item.prompt.substring(0, 100)}...</div>
+                <div class="saved-item-actions">
+                    <button onclick="copiarTexto(\`${encodeURIComponent(item.prompt)}\`)">📋 Copiar</button>
+                    <button class="del" onclick="removerFavorito(${i})">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    document.getElementById('btnExport').disabled = favoritos.length === 0;
+}
+
+// ========== GERAÇÃO DE PROMPT ==========
+function gerarPrompt() {
+    promptAtual = construirPrompt();
+    
+    historico.push({
+        prompt: promptAtual,
+        data: new Date().toLocaleString('pt-BR')
+    });
+    if (historico.length > 20) historico.shift();
+    localStorage.setItem('cf_hist', JSON.stringify(historico));
+    
+    const el = document.getElementById('resultado');
+    el.innerHTML = `
+        <h3>📋 Prompt de Copy Gerado</h3>
+        <div class="prompt-box">${promptAtual}</div>
+        <div class="result-actions">
+            <button class="btn-copy" onclick="copiarPrompt()">📋 Copiar</button>
+            <button class="btn-gemini" onclick="abrirGemini()">🚀 Abrir Gemini</button>
+            <button class="btn-fav" onclick="abrirModal()">⭐ Salvar</button>
+        </div>
+    `;
+    el.classList.add('show');
+    el.scrollIntoView({ behavior: 'smooth' });
+    
+    atualizarTabs();
+    toast('✅ Prompt gerado!');
+}
+
+function construirPrompt() {
+    const nicho = DATA.nichos.find(n => n.id === state.nicho);
+    const produto = DATA.produtos.find(p => p.id === state.produto);
+    const cor = DATA.cores.find(c => c.id === state.cor);
+    const genero = DATA.generos.find(g => g.id === state.genero);
+    const idade = DATA.idades.find(i => i.id === state.idade);
+    const perfil = DATA.perfis.find(p => p.id === state.perfil);
+    const tom = DATA.tons.find(t => t.id === state.tom);
+    const gatilho = DATA.gatilhos.find(g => g.id === state.gatilho);
+    const ocasiao = DATA.ocasioes.find(o => o.id === state.ocasiao);
+    const plataforma = DATA.plataformas.find(p => p.id === state.plataforma);
+    
+    const tecnicas = DATA.tecnicasPorTom[state.tom];
+    const beneficios = DATA.beneficiosPorProduto[state.produto] || DATA.beneficiosPorProduto.camiseta;
+    const specs = DATA.especificacoes[state.produto] || DATA.especificacoes.camiseta;
+
+    const temaTexto = temaMode === 'imagem' 
+        ? '⚠️ ANALISAR A IMAGEM DO MOCKUP ANEXADA - Identifique o texto, elementos visuais, estilo e tema da estampa antes de criar a copy' 
+        : state.tema;
+
+    const instrucaoImagem = temaMode === 'imagem'
+        ? '\n• IMPORTANTE: Analise detalhadamente a imagem do mockup para extrair o tema, texto e elementos da estampa ANTES de criar a copy'
+        : '';
+
+    let prompt = `Analise a imagem do mockup anexada e crie uma listagem COMPLETA para ${plataforma.nome}.
+
+═══════════════════════════════════════════════════════════════
+📦 INFORMAÇÕES DO PRODUTO
+═══════════════════════════════════════════════════════════════
+
+PRODUTO: ${produto.nome} ${cor.nome}
+NICHO: ${nicho.nome} ${nicho.icon}
+TEMA DA ESTAMPA: ${temaTexto}
+
+═══════════════════════════════════════════════════════════════
+👥 PÚBLICO-ALVO
+═══════════════════════════════════════════════════════════════
+
+GÊNERO: ${genero.nome}
+FAIXA ETÁRIA: ${idade.nome} (${idade.desc})
+PERFIL: ${perfil.nome} - ${perfil.desc}
+OCASIÃO: ${ocasiao.nome} - ${ocasiao.desc}
+
+═══════════════════════════════════════════════════════════════
+✍️ DIRETRIZES DE COPYWRITING
+═══════════════════════════════════════════════════════════════
+
+TOM DE VOZ: ${tom.nome} - ${tom.desc}
+GATILHO MENTAL PRINCIPAL: ${gatilho.nome} - ${gatilho.desc}
+PALAVRAS DE GATILHO SUGERIDAS: ${gatilho.palavras}
+
+FRAMEWORKS A UTILIZAR:
+• AIDA (Atenção → Interesse → Desejo → Ação)
+• PAS (Problema → Agitação → Solução)
+
+TÉCNICAS DE NEUROMARKETING:
+• Palavras sensoriais (macio, confortável, vibrante)
+• Palavras de poder (exclusivo, grátis, garantido)
+• Storytelling e identificação
+• Prova social quando aplicável
+
+═══════════════════════════════════════════════════════════════
+📝 O QUE VOCÊ DEVE GERAR (14 itens)
+═══════════════════════════════════════════════════════════════
+
+1️⃣ TÍTULOS (3 opções)
+   • Limite: ${plataforma.limites.titulo} caracteres
+   • Palavras-chave: ${nicho.keywords}
+   • Opção 1: Focado em SEO | Opção 2: Emocional | Opção 3: Curto para ads
+
+2️⃣ SUBTÍTULO / HEADLINE
+   • Frase de impacto usando gatilho: ${gatilho.nome}
+
+3️⃣ DESCRIÇÃO CURTA (150-200 caracteres)
+   • Para visualização rápida do marketplace
+
+4️⃣ DESCRIÇÃO COMPLETA (800-1200 caracteres)
+   • Framework AIDA | Tom: ${tom.desc}
+   • Benefícios emocionais + práticos | CTA forte
+
+5️⃣ BULLET POINTS (5-7 itens)
+   • Base: ${beneficios.join(', ')}
+
+6️⃣ ESPECIFICAÇÕES TÉCNICAS
+   • ${specs}
+
+7️⃣ PALAVRAS-CHAVE SEO (20 tags)
+   • Base: ${nicho.keywords}
+
+8️⃣ HASHTAGS (15)
+   • Mix de populares e específicas do nicho
+
+9️⃣ FRASES PARA ADS (3 opções)
+   • Google/Facebook Ads + Stories (máx 100 caracteres cada)
+
+🔟 CTAs - CHAMADAS PARA AÇÃO (4 opções)
+   • Tom: ${tom.nome}
+
+1️⃣1️⃣ FAQ (3 perguntas com respostas)
+   • Material, lavagem, troca
+
+1️⃣2️⃣ BIO PARA REDES SOCIAIS
+   • Instagram (150 chars + hashtags) | TikTok (80 chars)
+
+1️⃣3️⃣ PÚBLICO SUGERIDO PARA ADS
+   • Interesses, idade, comportamentos para Facebook/Google Ads
+
+1️⃣4️⃣ COPY PARA WHATSAPP
+   • Saudação + descrição + benefícios + CTA
+
+═══════════════════════════════════════════════════════════════
+⚠️ REGRAS IMPORTANTES
+═══════════════════════════════════════════════════════════════
+
+• Português brasileiro, evite clichês genéricos
+• Seja específico para o nicho ${nicho.nome}
+• Use o tom ${tom.nome} consistentemente
+• Aplique o gatilho ${gatilho.nome} naturalmente
+• Considere que é ${ocasiao.desc}
+• ${plataforma.dicas}${instrucaoImagem}
+
+═══════════════════════════════════════════════════════════════
+🎯 EXEMPLOS DE ABERTURA (inspiração)
+═══════════════════════════════════════════════════════════════
+
+${tecnicas.aberturas.map(a => `• "${a}"`).join('\n')}
+
+═══════════════════════════════════════════════════════════════
+🎯 EXEMPLOS DE CTA (inspiração)
+═══════════════════════════════════════════════════════════════
+
+${tecnicas.ctas.map(c => `• "${c}"`).join('\n')}
+
+═══════════════════════════════════════════════════════════════
+
+Gere TODOS os 14 itens de forma completa e profissional.
+Formate a resposta organizada e fácil de copiar.`;
+
+    return prompt;
+}
+
+// ========== COPIAR ==========
+function copiarPrompt() {
+    navigator.clipboard.writeText(promptAtual).then(() => {
+        toast('📋 Copiado!');
+    });
+}
+
+function copiarTexto(encoded) {
+    const texto = decodeURIComponent(encoded);
+    navigator.clipboard.writeText(texto).then(() => {
+        toast('📋 Copiado!');
+    });
+}
+
+// ========== ABRIR GEMINI ==========
+function abrirGemini() {
+    navigator.clipboard.writeText(promptAtual).then(() => {
+        toast('✅ Prompt copiado! Cole no Gemini com Ctrl+V');
+        window.open('https://gemini.google.com/app', '_blank');
+    });
+}
+
+// ========== FAVORITOS ==========
+function abrirModal() {
+    document.getElementById('modal').classList.add('show');
+    document.getElementById('inputNomeFav').value = '';
+    document.getElementById('inputNomeFav').focus();
+}
+
+function fecharModal() {
+    document.getElementById('modal').classList.remove('show');
+}
+
+function salvarFavorito() {
+    const nome = document.getElementById('inputNomeFav').value.trim() || 'Favorito ' + (favoritos.length + 1);
+    
+    favoritos.push({
+        nome: nome,
+        prompt: promptAtual,
+        data: new Date().toLocaleString('pt-BR')
+    });
+    
+    localStorage.setItem('cf_fav', JSON.stringify(favoritos));
+    fecharModal();
+    atualizarTabs();
+    toast('⭐ Salvo nos favoritos!');
+}
+
+function removerFavorito(index) {
+    favoritos.splice(index, 1);
+    localStorage.setItem('cf_fav', JSON.stringify(favoritos));
+    atualizarTabs();
+    toast('🗑️ Removido!');
+}
+
+function exportarFavoritos() {
+    if (favoritos.length === 0) return;
+    
+    let txt = '╔══════════════════════════════════════════════════════════════╗\n';
+    txt += '║  ✍️ COPYFORGE v1.0 - FAVORITOS EXPORTADOS                     ║\n';
+    txt += '║  📅 ' + new Date().toLocaleString('pt-BR').padEnd(52) + '║\n';
+    txt += '╚══════════════════════════════════════════════════════════════╝\n\n';
+    
+    favoritos.forEach((fav, i) => {
+        txt += '━'.repeat(60) + '\n';
+        txt += `⭐ ${fav.nome}\n`;
+        txt += `📅 ${fav.data}\n`;
+        txt += '━'.repeat(60) + '\n\n';
+        txt += fav.prompt + '\n\n\n';
+    });
+    
+    txt += '═'.repeat(60) + '\n';
+    txt += `📊 Total: ${favoritos.length} favoritos\n`;
+    txt += '🔗 Gerado por CopyForge v1.0 - POD Tools\n';
+    
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'copyforge-favoritos.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast('📤 Exportado!');
+}
+
+// ========== TOAST ==========
+function toast(msg, isError = false) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ========== EVENTOS GLOBAIS ==========
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fecharModal();
+});
+
+document.getElementById('modal').addEventListener('click', (e) => {
+    if (e.target.id === 'modal') fecharModal();
+});
+
+    </script>
+</body>
+</html>
