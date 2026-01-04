@@ -1103,6 +1103,12 @@ function atualizarContador() {
 // ==================== EVENT LISTENERS ====================
 
 function setupEventListeners() {
+    // NOVO: Logout
+    document.getElementById('btnLogout')?.addEventListener('click', confirmarLogout);
+    
+    // NOVO: Exibir usuário logado
+    exibirUsuarioLogado();
+    
     // Botões principais
     document.getElementById('btnGerar')?.addEventListener('click', gerarPrompts);
     document.getElementById('btnSurpresa')?.addEventListener('click', surpresaTotal);
@@ -1225,9 +1231,53 @@ function abrirNoGemini() {
         });
     }
 }
+
+// ==================== PACOTE A - MELHORIAS UX ====================
+
+// ===== Exibir nome do usuário no header =====
+function exibirUsuarioLogado() {
+    const usuario = getUsuarioLogado();
+    const greetingElement = document.getElementById('userGreeting');
+    
+    if (usuario && usuario.nome && greetingElement) {
+        // Pega primeiro nome apenas
+        const primeiroNome = usuario.nome.split(' ')[0];
+        greetingElement.textContent = `Olá, ${primeiroNome}`;
+    }
+}
+
+// ===== Atualizar status de conexão =====
+function atualizarStatusConexao(online, mensagem) {
+    const statusElement = document.getElementById('connectionStatus');
+    if (!statusElement) return;
+    
+    const statusIcon = statusElement.querySelector('.status-icon');
+    const statusText = statusElement.querySelector('.status-text');
+    
+    if (online) {
+        statusElement.className = 'connection-status online';
+        statusIcon.textContent = '☁️';
+        statusText.textContent = mensagem || 'Conectado à nuvem';
+    } else {
+        statusElement.className = 'connection-status offline';
+        statusIcon.textContent = '📴';
+        statusText.textContent = mensagem || 'Modo offline - dados locais';
+    }
+    
+    // Esconde o status online após 3 segundos
+    if (online) {
+        setTimeout(() => {
+            statusElement.classList.remove('online');
+        }, 3000);
+    }
+}
+
+// ===== Confirmar antes de sair =====
+function confirmarLogout() {
+    if (confirm('Tem certeza que deseja sair?')) {
+        fazerLogout();
+    }
+}
+
 // ==================== FIM DO APP.JS ====================
-
 console.log('📦 App.js carregado');
-
-
-

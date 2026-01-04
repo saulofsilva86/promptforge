@@ -1313,3 +1313,187 @@ footer {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 242, 96, 0.3);
 }
+
+/* ==================== PACOTE A - MELHORIAS UX ==================== */
+
+/* ===== Área do Usuário no Header ===== */
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-greeting {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-greeting::before {
+    content: '👤';
+}
+
+.btn-logout {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 88, 88, 0.3);
+    background: rgba(255, 88, 88, 0.1);
+    color: #ff5858;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: rgba(255, 88, 88, 0.2);
+    border-color: #ff5858;
+    transform: translateY(-2px);
+}
+
+/* ===== Indicador de Conexão ===== */
+.connection-status {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+    animation: fadeIn 0.3s ease;
+}
+
+.connection-status.online {
+    display: flex;
+    background: rgba(0, 242, 96, 0.1);
+    border: 1px solid rgba(0, 242, 96, 0.3);
+    color: var(--accent-primary);
+}
+
+.connection-status.offline {
+    display: flex;
+    background: rgba(255, 168, 0, 0.1);
+    border: 1px solid rgba(255, 168, 0, 0.3);
+    color: #ffa800;
+}
+
+.connection-status .status-icon {
+    font-size: 1rem;
+}
+
+/* ===== Melhorias Mobile - Padding e Touch ===== */
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .user-area {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .user-greeting {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    /* Aumentar área de toque nos nichos */
+    .nicho-pill {
+        padding: 16px 10px;
+        min-height: 80px;
+    }
+    
+    .nicho-pill .icon {
+        font-size: 1.8rem;
+    }
+    
+    .nicho-pill .name {
+        font-size: 0.8rem;
+    }
+    
+    /* Aumentar espaçamento entre pills */
+    .nicho-grid {
+        gap: 12px;
+    }
+    
+    /* Aumentar área de toque nas paletas */
+    .paleta-pill {
+        padding: 14px 18px;
+        min-height: 50px;
+    }
+    
+    /* Aumentar área de toque nas categorias */
+    .categoria-pill {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+    
+    /* Aumentar botões de ação */
+    .btn-idea {
+        padding: 14px 18px;
+        font-size: 1rem;
+    }
+    
+    /* Submenu items mais espaçados */
+    .submenu-grid {
+        gap: 15px;
+    }
+    
+    .submenu-item {
+        padding: 18px 12px;
+        min-height: 90px;
+    }
+    
+    .submenu-item .icon {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nicho-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+    
+    .nicho-pill {
+        padding: 14px 8px;
+        min-height: 75px;
+    }
+    
+    .paleta-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .submenu-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+    
+    .submenu-item {
+        padding: 15px 10px;
+        min-height: 85px;
+    }
+}
+
+/* ===== Stats Mini removido, área do usuário ocupa o lugar ===== */
+.stats-mini {
+    display: none;
+}
+
+/* ===== Animação suave para status ===== */
+@keyframes pulse-status {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.connection-status.offline .status-icon {
+    animation: pulse-status 2s ease infinite;
+}

@@ -31,85 +31,96 @@
     <div class="container">
         
         <!-- HEADER -->
-        <header class="header">
-            <div class="header-top">
-                <button class="theme-toggle" id="themeToggle" title="Alternar tema">
-                    <span class="icon-dark">🌙</span>
-                    <span class="icon-light">☀️</span>
-                </button>
-                <div class="stats-mini">
-                    <span id="promptCount">0</span> prompts gerados
-                </div>
-            </div>
+<header class="header">
+    <div class="header-top">
+        <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+            <span class="icon-dark">🌙</span>
+            <span class="icon-light">☀️</span>
+        </button>
+        
+        <!-- NOVO: Área do usuário -->
+        <div class="user-area">
+            <span class="user-greeting" id="userGreeting">Olá, Usuário</span>
+            <button class="btn-logout" id="btnLogout" title="Sair">
+                🚪 Sair
+            </button>
+        </div>
+    </div>
 
-            <div class="logo-container">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#00f260"/>
-                                <stop offset="50%" style="stop-color:#0575e6"/>
-                                <stop offset="100%" style="stop-color:#f857a6"/>
-                            </linearGradient>
-                            <linearGradient id="boltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#ffffff"/>
-                                <stop offset="100%" style="stop-color:#e0e0e0"/>
-                            </linearGradient>
-                            <filter id="glow">
-                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <circle cx="50" cy="50" r="48" fill="url(#bgGradient)" opacity="0.9"/>
-                        <circle cx="50" cy="50" r="40" fill="#1a1a2e" opacity="0.8"/>
-                        <path d="M55 15 L35 45 L48 45 L43 85 L65 50 L52 50 L55 15Z" fill="url(#boltGradient)" filter="url(#glow)"/>
-                        <circle cx="25" cy="30" r="3" fill="#00f260" opacity="0.8"/>
-                        <circle cx="75" cy="70" r="3" fill="#f857a6" opacity="0.8"/>
-                        <circle cx="78" cy="35" r="2" fill="#0575e6" opacity="0.6"/>
-                        <circle cx="22" cy="65" r="2" fill="#00f260" opacity="0.6"/>
-                        <circle cx="50" cy="50" r="48" fill="none" stroke="url(#bgGradient)" stroke-width="2" opacity="0.5"/>
-                    </svg>
-                </div>
-                <div class="logo-text">
-                    <span class="logo-title">PromptForge</span>
-                    <span class="logo-tagline">Forjando Prompts Perfeitos</span>
-                </div>
-            </div>
+    <!-- NOVO: Indicador de status de conexão -->
+    <div class="connection-status" id="connectionStatus">
+        <span class="status-icon">📡</span>
+        <span class="status-text">Conectado</span>
+    </div>
 
-            <p class="description">Gerador de Prompts Profissionais para Estampas de Camisetas</p>
-            
-            <div class="stats-bar">
-                <div class="stat-item">
-                    <div class="stat-number">27</div>
-                    <div class="stat-label">Nichos</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label">Estilos</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">7</div>
-                    <div class="stat-label">Paletas</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">IAs</div>
-                </div>
-            </div>
+    <div class="logo-container">
+        <div class="logo-icon">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00f260"/>
+                        <stop offset="50%" style="stop-color:#0575e6"/>
+                        <stop offset="100%" style="stop-color:#f857a6"/>
+                    </linearGradient>
+                    <linearGradient id="boltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ffffff"/>
+                        <stop offset="100%" style="stop-color:#e0e0e0"/>
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <circle cx="50" cy="50" r="48" fill="url(#bgGradient)" opacity="0.9"/>
+                <circle cx="50" cy="50" r="40" fill="#1a1a2e" opacity="0.8"/>
+                <path d="M55 15 L35 45 L48 45 L43 85 L65 50 L52 50 L55 15Z" fill="url(#boltGradient)" filter="url(#glow)"/>
+                <circle cx="25" cy="30" r="3" fill="#00f260" opacity="0.8"/>
+                <circle cx="75" cy="70" r="3" fill="#f857a6" opacity="0.8"/>
+                <circle cx="78" cy="35" r="2" fill="#0575e6" opacity="0.6"/>
+                <circle cx="22" cy="65" r="2" fill="#00f260" opacity="0.6"/>
+                <circle cx="50" cy="50" r="48" fill="none" stroke="url(#bgGradient)" stroke-width="2" opacity="0.5"/>
+            </svg>
+        </div>
+        <div class="logo-text">
+            <span class="logo-title">PromptForge</span>
+            <span class="logo-tagline">Forjando Prompts Perfeitos</span>
+        </div>
+    </div>
 
-            <!-- Quick Actions Header -->
-            <div class="header-actions">
-                <button class="header-btn" id="btnHistorico" title="Histórico">
-                    📜 Histórico
-                </button>
-                <button class="header-btn" id="btnFavoritos" title="Favoritos">
-                    ⭐ Favoritos
-                </button>
-            </div>
-        </header>
+    <p class="description">Gerador de Prompts Profissionais para Estampas de Camisetas</p>
+    
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number">27</div>
+            <div class="stat-label">Nichos</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">12</div>
+            <div class="stat-label">Estilos</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">7</div>
+            <div class="stat-label">Paletas</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">3</div>
+            <div class="stat-label">IAs</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Header -->
+    <div class="header-actions">
+        <button class="header-btn" id="btnHistorico" title="Histórico">
+            📜 Histórico
+        </button>
+        <button class="header-btn" id="btnFavoritos" title="Favoritos">
+            ⭐ Favoritos
+        </button>
+    </div>
+</header>
 
         <!-- FORM SECTION -->
         <section class="form-section">

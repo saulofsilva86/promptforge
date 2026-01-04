@@ -518,6 +518,10 @@ const GOOGLE_SHEETS_CONFIG = {
 async function carregarDadosExternos() {
     if (!GOOGLE_SHEETS_CONFIG.enabled || !GOOGLE_SHEETS_CONFIG.webAppUrl) {
         console.log('📦 Usando banco de dados local');
+        // NOVO: Atualiza status visual
+        if (typeof atualizarStatusConexao === 'function') {
+            atualizarStatusConexao(false, 'Modo offline - dados locais');
+        }
         return BANCO_IDEIAS;
     }
 
@@ -548,16 +552,30 @@ async function carregarDadosExternos() {
         
         if (totalIdeias > 0) {
             console.log(`☁️ Dados carregados do Google Sheets (${totalIdeias} ideias)`);
-            // MUDANÇA: Retorna SÓ os dados da planilha, não mescla
+            // NOVO: Atualiza status visual
+            if (typeof atualizarStatusConexao === 'function') {
+                atualizarStatusConexao(true, `Conectado - ${totalIdeias} ideias carregadas`);
+            }
             return dados;
         } else {
             console.warn('⚠️ Planilha vazia, usando backup local');
+            if (typeof atualizarStatusConexao === 'function') {
+                atualizarStatusConexao(false, 'Planilha vazia - usando dados locais');
+            }
             return BANCO_IDEIAS;
         }
         
     } catch (error) {
         console.warn('⚠️ Falha ao carregar dados externos, usando backup local');
         console.warn('Detalhe:', error.message);
+        // NOVO: Atualiza status visual com mensagem amigável
+        if (typeof atualizarStatusConexao === 'function') {
+            atualizarStatusConexao(false, 'Sem conexão - usando dados locais');
+        }
+        // NOVO: Toast amigável para o usuário
+        if (typeof showToast === 'function') {
+            showToast('📴 Modo offline ativado');
+        }
         return BANCO_IDEIAS;
     }
 }
