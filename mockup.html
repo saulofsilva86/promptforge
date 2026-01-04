@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MockupForge - POD Tools</title>
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👕</text></svg>">
+    
+    <!-- Autenticação -->
+    <script src="auth.js"></script>
+<script>
+    // Verificação local primeiro (mais rápida)
+    (function() {
+        const sessao = localStorage.getItem('promptforge_session');
+        if (!sessao) {
+            window.location.href = 'index.html';
+            return;
+        }
+        try {
+            const dados = JSON.parse(sessao);
+            if (!dados.email) {
+                window.location.href = 'index.html';
+            }
+        } catch (e) {
+            window.location.href = 'index.html';
+        }
+    })();
+</script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #f857a6;
+            --secondary: #00f260;
+            --accent: #0575e6;
+            --bg: #1a1a2e;
+            --bg-card: rgba(255,255,255,0.05);
+            --bg-input: rgba(0,0,0,0.3);
+            --text: #ffffff;
+            --text-dim: #888;
+            --border: rgba(255,255,255,0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #16213e 100%);
+            min-height: 100vh;
+            color: var(--text);
+            padding: 0;
+            padding-bottom: 100px;
+        }
+        
+        /* ========== NAVEGAÇÃO INTEGRADA ========== */
+        .top-bar {
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            backdrop-filter: blur(10px);
+        }
+        
+        .top-bar-inner {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .app-nav {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .nav-item {
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover {
+            color: var(--text);
+            background: var(--bg-card);
+        }
+        
+        .nav-item.active {
+            color: var(--secondary);
+            background: rgba(0,242,96,0.1);
+            border-color: rgba(0,242,96,0.3);
+        }
+        
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-greeting {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            display: none;
+        }
+        
+        @media (min-width: 400px) {
+            .user-greeting { display: block; }
+        }
+        
+        .btn-logout {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-logout:hover {
+            border-color: #ff5858;
+            color: #ff5858;
+        }
+        
+        /* ========== CONTAINER ========== */
+        .container { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            padding: 15px;
+        }
+        
+        /* ========== HEADER ========== */
+        .header { text-align: center; padding: 15px 0 20px; }
+        .header .logo { font-size: 2.5rem; }
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header p { color: var(--text-dim); font-size: 0.9rem; }
+        .header .version {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-top: 8px;
+        }
+        
+        /* ========== STICKY CONFIRM ========== */
+        .sticky-confirm {
+            position: sticky;
+            top: 60px;
+            z-index: 100;
+            background: linear-gradient(135deg, #2d1f3d, var(--bg));
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sticky-confirm.confirmed {
+            border-color: var(--secondary);
+            background: linear-gradient(135deg, #1a2e1a, var(--bg));
+        }
+        .sticky-confirm input { width: 20px; height: 20px; accent-color: var(--secondary); }
+        .sticky-confirm label { font-size: 0.85rem; cursor: pointer; flex: 1; }
+        .sticky-confirm .icon { font-size: 1.3rem; }
+        
+        /* ========== SEÇÕES ========== */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        .section-header:hover { background: rgba(255,255,255,0.02); }
+        .section-header .arrow { transition: transform 0.3s; }
+        .section.open .arrow { transform: rotate(180deg); }
+        .section-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .section.open .section-content { max-height: 3000px; }
+        .section-inner { padding: 0 15px 15px; }
+        
+        /* ========== FORMS ========== */
+        .form-group { margin-bottom: 18px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        /* ========== GRIDS ========== */
+        .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .options-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .options-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .options-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+        .options-grid.cols-6 { grid-template-columns: repeat(6, 1fr); }
+        
+        .opt {
+            padding: 10px 5px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-input);
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .opt:hover { border-color: var(--primary); }
+        .opt.selected { border-color: var(--secondary); background: rgba(0,242,96,0.15); }
+        .opt.disabled { opacity: 0.3; pointer-events: none; }
+        .opt .icon { display: block; font-size: 1.2rem; margin-bottom: 3px; }
+        
+        .color-opt {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-opt:hover { transform: scale(1.1); }
+        .color-opt.selected { border-color: var(--secondary); box-shadow: 0 0 10px rgba(0,242,96,0.4); }
+        
+        /* ========== INPUTS ========== */
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+        select:focus, input:focus { outline: none; border-color: var(--secondary); }
+        select option { background: var(--bg); }
+        input::placeholder { color: #666; }
+        input[type="text"] { margin-top: 10px; }
+        
+        .hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 6px; }
+        .hint .bulb { color: #f5af19; }
+        
+        /* ========== POSES ========== */
+        .pose-group-title {
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 10px 0 8px;
+            display: inline-block;
+        }
+        .pose-group-title.rec { color: #f5af19; background: rgba(245,175,25,0.1); }
+        .pose-group-title.uni { color: var(--text-dim); background: rgba(255,255,255,0.05); }
+        
+        .pose-opt {
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-input);
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            transition: all 0.2s;
+        }
+        .pose-opt:hover { border-color: var(--primary); }
+        .pose-opt.selected { border-color: var(--secondary); background: rgba(0,242,96,0.15); }
+        .pose-opt.ai { border-color: var(--accent); background: rgba(5,117,230,0.1); text-align: center; font-weight: 600; }
+        
+        .random-btn {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+        .random-btn:hover { border-color: var(--primary); color: var(--primary); }
+        
+        /* ========== BOTÕES ========== */
+        .actions { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
+        .btn {
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: linear-gradient(135deg, var(--secondary), var(--accent)); color: var(--bg); }
+        .btn-primary:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,242,96,0.3); }
+        .btn-secondary { background: linear-gradient(135deg, var(--primary), #ff5858); color: white; }
+        
+        /* ========== RESULTADO ========== */
+        .result {
+            background: var(--bg-card);
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .result.show { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        .result h3 { color: var(--secondary); margin-bottom: 12px; font-size: 1rem; }
+        
+        .prompt-box {
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #ddd;
+            border-left: 3px solid var(--secondary);
+            max-height: 200px;
+            overflow-y: auto;
+            word-break: break-word;
+        }
+        
+        .result-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .result-actions button {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .btn-copy { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-fav { background: var(--bg-input); border: 2px solid #f5af19 !important; color: #f5af19; }
+        
+        /* ========== VARIAÇÕES ========== */
+        .variation { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .variation:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .variation-label { font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-bottom: 8px; }
+        
+        /* ========== TABS ========== */
+        .tabs { margin-top: 25px; }
+        .tabs-header { display: flex; border-bottom: 2px solid var(--border); }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+        }
+        .tab-btn.active { color: var(--secondary); }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--secondary);
+        }
+        .tab-btn .count {
+            background: var(--bg-input);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+        .tab-content.active { display: block; }
+        
+        /* ========== ITENS SALVOS ========== */
+        .saved-item {
+            background: var(--bg-input);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .saved-item-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .saved-item-name { font-weight: 600; font-size: 0.9rem; }
+        .saved-item-date { font-size: 0.7rem; color: var(--text-dim); }
+        .saved-item-preview {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .saved-item-actions { display: flex; gap: 6px; }
+        .saved-item-actions button {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .saved-item-actions button:hover { border-color: var(--secondary); color: var(--secondary); }
+        .saved-item-actions .del:hover { border-color: #ff5858; color: #ff5858; }
+        
+        .empty { text-align: center; padding: 30px; color: var(--text-dim); }
+        .empty .icon { font-size: 2rem; margin-bottom: 10px; opacity: 0.5; }
+        
+        .export-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .export-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--secondary);
+            color: var(--bg);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.error { background: #ff5858; color: white; }
+        
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            padding: 20px;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--bg);
+            border-radius: 15px;
+            padding: 25px;
+            width: 100%;
+            max-width: 350px;
+        }
+        .modal h3 { color: var(--secondary); margin-bottom: 15px; text-align: center; }
+        .modal input { margin-bottom: 15px; margin-top: 0; }
+        .modal-btns { display: flex; gap: 10px; }
+        .modal-btns button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .modal-cancel { background: var(--bg-input); color: var(--text-dim); }
+        .modal-save { background: var(--secondary); color: var(--bg); }
+        
+        footer { text-align: center; padding: 20px; color: #666; font-size: 0.8rem; }
+        .hidden { display: none !important; }
+        
+        @media (max-width: 400px) {
+            .options-grid.cols-4, .options-grid.cols-5 { grid-template-columns: repeat(3, 1fr); }
+            .options-grid.cols-6 { grid-template-columns: repeat(4, 1fr); }
+            .nav-item { padding: 6px 10px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- BARRA DE NAVEGAÇÃO -->
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <nav class="app-nav">
+                <a href="app.html" class="nav-item">🎨 Estampas</a>
+                <a href="mockup.html" class="nav-item active">👕 Mockups</a>
+            </nav>
+            <div class="user-area">
+                <span class="user-greeting" id="userGreeting">Olá, Usuário</span>
+                <button class="btn-logout" onclick="confirmarLogout()">🚪 Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">👕</div>
+            <h1>MockupForge</h1>
+            <p>Prompts profissionais para mockups com IA</p>
+            <span class="version">v2.0</span>
+        </header>
+
+        <div class="sticky-confirm" id="stickyConfirm">
+            <span class="icon">⚠️</span>
+            <input type="checkbox" id="confirmCheck">
+            <label for="confirmCheck">Já anexei minha estampa na IA</label>
+        </div>
+
+        <!-- SEÇÃO 1: PRODUTO E ESTAMPA -->
+        <section class="section open" id="secProduto">
+            <div class="section-header" onclick="toggleSection('secProduto')">
+                <span>📦 Produto e Estampa</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="form-group">
+                        <label>🎯 Nicho</label>
+                        <div class="options-grid cols-4" id="gridNicho"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>👕 Produto</label>
+                        <div class="options-grid" id="gridProduto"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>🎨 Cor</label>
+                        <div class="options-grid cols-6" id="gridCor"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>📍 Posição da Estampa</label>
+                        <div class="options-grid cols-4" id="gridPosicao"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>📐 Tamanho da Estampa</label>
+                        <div class="options-grid cols-5" id="gridTamanho"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: MODELO -->
+        <section class="section" id="secModelo">
+            <div class="section-header" onclick="toggleSection('secModelo')">
+                <span>👤 Modelo</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="form-group">
+                        <label>👤 Tipo</label>
+                        <div class="options-grid cols-4" id="gridModelo"></div>
+                    </div>
+                    <div class="form-group" id="grpEtnia">
+                        <label>🌍 Etnia</label>
+                        <div class="options-grid" id="gridEtnia"></div>
+                    </div>
+                    <div class="form-group" id="grpIdade">
+                        <label>📅 Idade</label>
+                        <div class="options-grid" id="gridIdade"></div>
+                    </div>
+                    <div class="form-group" id="grpExpressao">
+                        <label>😊 Expressão</label>
+                        <div class="options-grid cols-5" id="gridExpressao"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: CENA E FOTOGRAFIA -->
+        <section class="section" id="secCena">
+            <div class="section-header" onclick="toggleSection('secCena')">
+                <span>🎬 Cena e Fotografia</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="form-group" id="grpCategoria">
+                        <label>📁 Categoria</label>
+                        <div class="options-grid" id="gridCategoria"></div>
+                    </div>
+                    <div class="form-group" id="grpCenario">
+                        <label>📍 Cenário</label>
+                        <select id="selCenario"><option value="">Escolha categoria...</option></select>
+                        <input type="text" id="txtCenario" placeholder="Ou descreva seu cenário...">
+                        <p class="hint"><span class="bulb">💡</span> Dica: IAs funcionam melhor em inglês</p>
+                        <button class="random-btn" onclick="randomCenario()">🎲 Aleatório</button>
+                    </div>
+                    <div class="form-group hidden" id="grpSuperficie">
+                        <label>🪵 Superfície (Flat Lay)</label>
+                        <select id="selSuperficie"><option value="">Selecione...</option></select>
+                        <input type="text" id="txtSuperficie" placeholder="Ou descreva...">
+                        <button class="random-btn" onclick="randomSuperficie()">🎲 Aleatório</button>
+                    </div>
+                    <div class="form-group" id="grpPose">
+                        <label>🏃 Pose</label>
+                        <div id="poseContainer"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>📷 Estilo de Foto</label>
+                        <div class="options-grid cols-5" id="gridEstilo"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>💡 Iluminação</label>
+                        <div class="options-grid cols-4" id="gridLuz"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>📐 Ângulo</label>
+                        <div class="options-grid cols-5" id="gridAngulo"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="actions">
+            <button class="btn btn-primary" id="btnGerar" onclick="gerarPrompt()" disabled>🚀 Gerar Prompt</button>
+            <button class="btn btn-secondary" id="btnVariacoes" onclick="gerarVariacoes()" disabled>🎲 3 Variações</button>
+        </div>
+
+        <div class="result" id="resultado"></div>
+
+        <div class="tabs">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('historico')">📜 Histórico <span class="count" id="countHist">0</span></button>
+                <button class="tab-btn" onclick="switchTab('favoritos')">⭐ Favoritos <span class="count" id="countFav">0</span></button>
+            </div>
+            <div class="tab-content active" id="tabHistorico"></div>
+            <div class="tab-content" id="tabFavoritos">
+                <div id="listaFavoritos"></div>
+                <button class="export-btn" id="btnExport" onclick="exportarFavoritos()" disabled>📤 Exportar (.txt)</button>
+            </div>
+        </div>
+
+        <footer>👕 MockupForge v2.0 - POD Tools</footer>
+    </div>
+
+    <!-- MODAL FAVORITOS -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h3>⭐ Salvar Favorito</h3>
+            <input type="text" id="inputNomeFav" placeholder="Nome do favorito...">
+            <div class="modal-btns">
+                <button class="modal-cancel" onclick="fecharModal()">Cancelar</button>
+                <button class="modal-save" onclick="salvarFavorito()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+
+// ========== BANCO DE DADOS COMPLETO ==========
+const DATA = {
+    nichos: [
+        { id: 'tenis', nome: 'Tênis', icon: '🎾' },
+        { id: 'surf', nome: 'Surf', icon: '🏄' },
+        { id: 'fitness', nome: 'Fitness', icon: '💪' },
+        { id: 'futebol', nome: 'Futebol', icon: '⚽' },
+        { id: 'skate', nome: 'Skate', icon: '🛹' },
+        { id: 'musica', nome: 'Música', icon: '🎸' },
+        { id: 'cafe', nome: 'Café', icon: '☕' },
+        { id: 'cerveja', nome: 'Cerveja', icon: '🍺' },
+        { id: 'pets', nome: 'Pets', icon: '🐕' },
+        { id: 'gatos', nome: 'Gatos', icon: '🐱' },
+        { id: 'viagem', nome: 'Viagem', icon: '✈️' },
+        { id: 'natureza', nome: 'Natureza', icon: '🌿' },
+        { id: 'games', nome: 'Games', icon: '🎮' },
+        { id: 'tech', nome: 'Tech', icon: '💻' },
+        { id: 'gospel', nome: 'Gospel', icon: '✝️' },
+        { id: 'carros', nome: 'Carros', icon: '🏎️' },
+        { id: 'motos', nome: 'Motos', icon: '🏍️' },
+        { id: 'churrasco', nome: 'Churrasco', icon: '🥩' },
+        { id: 'pesca', nome: 'Pesca', icon: '🎣' },
+        { id: 'gastronomia', nome: 'Gastro', icon: '🍕' },
+        { id: 'livros', nome: 'Livros', icon: '📚' },
+        { id: 'yoga', nome: 'Yoga', icon: '🧘' },
+        { id: 'crossfit', nome: 'CrossFit', icon: '🏋️' },
+        { id: 'signos', nome: 'Signos', icon: '♌' },
+        { id: 'profissoes', nome: 'Profissões', icon: '💼' },
+        { id: 'outro', nome: 'Outro', icon: '✨' }
+    ],
+
+    produtos: [
+        { id: 'classic', nome: 'Classic Tee', icon: '👕', en: 'classic cotton crew neck t-shirt' },
+        { id: 'oversized', nome: 'Oversized', icon: '📦', en: 'oversized boxy fit t-shirt' },
+        { id: 'hoodie', nome: 'Hoodie', icon: '🧥', en: 'pullover hoodie sweatshirt' },
+        { id: 'regata', nome: 'Regata', icon: '💪', en: 'sleeveless tank top' },
+        { id: 'ecobag', nome: 'Ecobag', icon: '🛍️', en: 'canvas tote bag' }
+    ],
+
+    cores: [
+        { id: 'branco', hex: '#FFFFFF', en: 'white', light: true },
+        { id: 'preto', hex: '#1a1a1a', en: 'black', light: false },
+        { id: 'cinza', hex: '#6B7280', en: 'heather gray', light: false },
+        { id: 'cinzaesc', hex: '#374151', en: 'charcoal dark gray', light: false },
+        { id: 'navy', hex: '#1e3a5f', en: 'navy blue', light: false },
+        { id: 'azulbebe', hex: '#93C5FD', en: 'baby blue', light: true },
+        { id: 'verde', hex: '#166534', en: 'forest green', light: false },
+        { id: 'militar', hex: '#4d5c2e', en: 'army olive green', light: false },
+        { id: 'bordo', hex: '#7f1d1d', en: 'burgundy maroon', light: false },
+        { id: 'vermelho', hex: '#dc2626', en: 'red', light: false },
+        { id: 'mostarda', hex: '#ca8a04', en: 'mustard yellow', light: false },
+        { id: 'bege', hex: '#d4c5a9', en: 'cream beige', light: true },
+        { id: 'rosa', hex: '#f9a8d4', en: 'light pink', light: true },
+        { id: 'lilas', hex: '#c4b5fd', en: 'lavender purple', light: true },
+        { id: 'marrom', hex: '#78350f', en: 'brown', light: false },
+        { id: 'offwhite', hex: '#faf5ef', en: 'off-white cream', light: true }
+    ],
+
+    posicoes: [
+        { id: 'centro', nome: 'Centro', icon: '🎯', en: 'centered on the chest' },
+        { id: 'esquerdo', nome: 'Peito Esq', icon: '◀️', en: 'small left chest pocket area like a logo badge' },
+        { id: 'direito', nome: 'Peito Dir', icon: '▶️', en: 'small right chest area' },
+        { id: 'full', nome: 'Full Front', icon: '📏', en: 'large full front print covering the entire chest area' },
+        { id: 'costas', nome: 'Costas', icon: '🔙', en: 'large centered back print' },
+        { id: 'combo', nome: 'Frente+Costa', icon: '🔄', en: 'small front chest logo plus large back print' },
+        { id: 'barra', nome: 'Barra', icon: '⬇️', en: 'bottom hem area print streetwear style' },
+        { id: 'manga', nome: 'Manga', icon: '💪', en: 'sleeve print on the arm' }
+    ],
+
+    tamanhos: [
+        { id: 'pp', nome: 'Mini', icon: '·', en: 'very small 5cm mini logo badge' },
+        { id: 'p', nome: 'Pequeno', icon: '•', en: 'small 10cm badge size print' },
+        { id: 'm', nome: 'Médio', icon: '○', en: 'medium 20cm print' },
+        { id: 'g', nome: 'Grande', icon: '◎', en: 'large 30cm print' },
+        { id: 'gg', nome: 'Extra G', icon: '◉', en: 'extra large full coverage print' }
+    ],
+
+    modelos: [
+        { id: 'homem', nome: 'Homem', icon: '👨', en: 'male model' },
+        { id: 'mulher', nome: 'Mulher', icon: '👩', en: 'female model' },
+        { id: 'nb', nome: 'Não-Bin', icon: '🧑', en: 'androgynous non-binary model' },
+        { id: 'flatlay', nome: 'Flat Lay', icon: '📷', en: '' }
+    ],
+
+    etnias: [
+        { id: 'caucasiano', nome: 'Caucasiano', icon: '👨🏻', en: 'caucasian white' },
+        { id: 'negro', nome: 'Negro', icon: '👨🏿', en: 'black african' },
+        { id: 'asiatico', nome: 'Asiático', icon: '👨🏻', en: 'east asian' },
+        { id: 'latino', nome: 'Latino', icon: '👨🏽', en: 'latino hispanic' },
+        { id: 'indiano', nome: 'Indiano', icon: '👳', en: 'south asian indian' },
+        { id: 'misto', nome: 'Diverso', icon: '🌍', en: 'mixed ethnicity diverse' }
+    ],
+
+    idades: [
+        { id: 'jovem', nome: '20s', icon: '🧑', en: 'young adult in their 20s' },
+        { id: 'adulto', nome: '30-40s', icon: '👨', en: 'adult in their 30s to 40s' },
+        { id: 'maduro', nome: '50+', icon: '🧔', en: 'mature adult in their 50s' }
+    ],
+
+    expressoes: [
+        { id: 'neutro', nome: 'Neutro', icon: '😐', en: 'neutral serious editorial expression' },
+        { id: 'leve', nome: 'Leve', icon: '🙂', en: 'slight gentle smile' },
+        { id: 'sorrindo', nome: 'Sorrindo', icon: '😊', en: 'warm genuine smile' },
+        { id: 'rindo', nome: 'Rindo', icon: '😄', en: 'laughing joyfully' },
+        { id: 'confiante', nome: 'Confiante', icon: '😎', en: 'confident cool expression' }
+    ],
+
+    estilosFoto: [
+        { id: 'pro', nome: 'DSLR', icon: '📸', en: 'professional DSLR camera photography sharp high quality' },
+        { id: 'iphone', nome: 'iPhone', icon: '📱', en: 'authentic iPhone smartphone photo realistic casual' },
+        { id: 'editorial', nome: 'Editorial', icon: '📰', en: 'high fashion editorial magazine photoshoot style' },
+        { id: 'filme', nome: 'Filme', icon: '🎞️', en: 'analog film photography with grain vintage look Kodak Portra' },
+        { id: 'ecommerce', nome: 'E-comm', icon: '🛒', en: 'clean e-commerce product photography' }
+    ],
+
+    categorias: [
+        { id: 'estudio', nome: 'Estúdio', icon: '📸' },
+        { id: 'esportivo', nome: 'Esportivo', icon: '🏃' },
+        { id: 'urbano', nome: 'Urbano', icon: '🏙️' },
+        { id: 'natureza', nome: 'Natureza', icon: '🌲' },
+        { id: 'indoor', nome: 'Indoor', icon: '🏠' }
+    ],
+
+    nichoCategorias: {
+        tenis: ['estudio', 'esportivo', 'urbano'],
+        surf: ['estudio', 'esportivo', 'natureza'],
+        fitness: ['estudio', 'esportivo', 'urbano'],
+        futebol: ['estudio', 'esportivo'],
+        skate: ['estudio', 'esportivo', 'urbano'],
+        musica: ['estudio', 'urbano', 'indoor'],
+        cafe: ['estudio', 'indoor', 'urbano'],
+        cerveja: ['estudio', 'indoor', 'urbano'],
+        pets: ['estudio', 'natureza', 'indoor'],
+        gatos: ['estudio', 'indoor'],
+        viagem: ['estudio', 'natureza', 'urbano'],
+        natureza: ['estudio', 'natureza'],
+        games: ['estudio', 'indoor', 'urbano'],
+        tech: ['estudio', 'indoor', 'urbano'],
+        gospel: ['estudio', 'indoor', 'natureza'],
+        carros: ['estudio', 'urbano', 'esportivo'],
+        motos: ['estudio', 'urbano', 'natureza'],
+        churrasco: ['estudio', 'indoor', 'natureza'],
+        pesca: ['estudio', 'natureza'],
+        gastronomia: ['estudio', 'indoor', 'urbano'],
+        livros: ['estudio', 'indoor'],
+        yoga: ['estudio', 'natureza', 'indoor'],
+        crossfit: ['estudio', 'esportivo'],
+        signos: ['estudio', 'natureza', 'indoor'],
+        profissoes: ['estudio', 'urbano', 'indoor'],
+        outro: ['estudio', 'urbano', 'natureza', 'indoor', 'esportivo']
+    },
+
+    iluminacoes: [
+        { id: 'golden', nome: 'Golden', icon: '🌅', en: 'golden hour warm sunlight soft shadows' },
+        { id: 'estudio', nome: 'Estúdio', icon: '📸', en: 'professional studio lighting softbox clean' },
+        { id: 'cinema', nome: 'Cinema', icon: '🎬', en: 'cinematic dramatic lighting moody contrast' },
+        { id: 'natural', nome: 'Natural', icon: '☀️', en: 'natural ambient daylight casual' }
+    ],
+
+    angulos: [
+        { id: 'frontal', nome: 'Frontal', icon: '👤', en: 'front view facing camera' },
+        { id: '34', nome: '3/4', icon: '↗️', en: 'three quarter angle view' },
+        { id: 'close', nome: 'Close', icon: '👕', en: 'close up chest focus on print' },
+        { id: 'costas', nome: 'Costas', icon: '🔙', en: 'back view rear' },
+        { id: 'corpo', nome: 'Full', icon: '🧍', en: 'full body head to toe' }
+    ],
+
+    cenarios: {
+        estudio: [
+            { nome: 'Fundo branco infinito', en: 'seamless white infinity backdrop professional studio' },
+            { nome: 'Fundo cinza neutro', en: 'neutral gray backdrop studio' },
+            { nome: 'Fundo preto elegante', en: 'elegant black background studio' },
+            { nome: 'Fundo bege quente', en: 'warm beige cream backdrop' },
+            { nome: 'Fundo azul pastel', en: 'soft pastel blue backdrop' },
+            { nome: 'Fundo rosa suave', en: 'soft millennial pink backdrop' },
+            { nome: 'Fundo gradiente', en: 'soft gradient background' },
+            { nome: 'Parede tijolos brancos', en: 'white painted brick wall' },
+            { nome: 'Parede tijolos vermelhos', en: 'rustic red exposed brick wall' },
+            { nome: 'Parede concreto', en: 'raw concrete industrial wall' },
+            { nome: 'Parede texturizada', en: 'textured plaster wall' },
+            { nome: 'Cortina branca', en: 'white curtain with natural light' },
+            { nome: 'Parede geométrica', en: 'modern geometric pattern wall' },
+            { nome: 'Estúdio com plantas', en: 'studio with green plants decor' },
+            { nome: 'Parede arte abstrata', en: 'wall with abstract art' },
+            { nome: 'Fundo papel kraft', en: 'kraft paper backdrop' },
+            { nome: 'Estúdio neon', en: 'studio with neon lights' },
+            { nome: 'Parede madeira', en: 'natural wood panel wall' },
+            { nome: 'Fundo tecido drapeado', en: 'draped fabric backdrop' },
+            { nome: 'Estúdio industrial', en: 'industrial metal wall studio' }
+        ],
+        esportivo: [
+            { nome: 'Quadra tênis saibro', en: 'clay tennis court with net' },
+            { nome: 'Quadra tênis grama', en: 'grass tennis court Wimbledon style' },
+            { nome: 'Quadra tênis indoor', en: 'indoor tennis court' },
+            { nome: 'Academia moderna', en: 'modern gym with equipment' },
+            { nome: 'Box CrossFit', en: 'CrossFit box gym industrial' },
+            { nome: 'Área de pesos', en: 'weight room dumbbells barbells' },
+            { nome: 'Estúdio yoga', en: 'bright yoga studio' },
+            { nome: 'Piscina olímpica', en: 'olympic swimming pool' },
+            { nome: 'Beira da piscina', en: 'poolside lounge area' },
+            { nome: 'Campo futebol', en: 'soccer football field grass' },
+            { nome: 'Arquibancada estádio', en: 'stadium seats bleachers' },
+            { nome: 'Vestiário', en: 'sports locker room' },
+            { nome: 'Pista atletismo', en: 'running track athletics' },
+            { nome: 'Praia com ondas', en: 'beach with surfing waves' },
+            { nome: 'Pier oceano', en: 'wooden pier ocean view' },
+            { nome: 'Calçadão praia', en: 'beach boardwalk' },
+            { nome: 'Skatepark', en: 'concrete skatepark ramps' },
+            { nome: 'Half-pipe sunset', en: 'halfpipe at sunset' },
+            { nome: 'Pista corrida', en: 'race track circuit' },
+            { nome: 'Quadra basquete', en: 'outdoor basketball court' }
+        ],
+        urbano: [
+            { nome: 'Rua Nova York', en: 'New York City street yellow taxi' },
+            { nome: 'Rua Tóquio neon', en: 'Tokyo street night neon signs' },
+            { nome: 'Beco Londres', en: 'London brick alley' },
+            { nome: 'Rua Los Angeles', en: 'Los Angeles street palm trees' },
+            { nome: 'Rua Paris', en: 'Parisian street cafe' },
+            { nome: 'Beco grafitti', en: 'alley colorful graffiti murals' },
+            { nome: 'Mural arte urbana', en: 'vibrant street art mural' },
+            { nome: 'Estação metrô', en: 'subway metro station' },
+            { nome: 'Plataforma trem', en: 'train station platform' },
+            { nome: 'Rooftop cidade', en: 'rooftop city skyline view' },
+            { nome: 'Rooftop noturno', en: 'rooftop bar night city lights' },
+            { nome: 'Loja discos', en: 'vintage record store' },
+            { nome: 'Loja sneakers', en: 'sneaker shoe store' },
+            { nome: 'Estúdio música', en: 'music studio instruments' },
+            { nome: 'Escadaria urbana', en: 'urban concrete stairs' },
+            { nome: 'Passarela noite', en: 'pedestrian bridge night' },
+            { nome: 'Estacionamento', en: 'parking garage' },
+            { nome: 'Garagem vintage', en: 'garage classic car' },
+            { nome: 'Posto retrô', en: 'retro gas station' },
+            { nome: 'Food truck', en: 'colorful food truck' }
+        ],
+        natureza: [
+            { nome: 'Praia tropical', en: 'tropical beach palm trees' },
+            { nome: 'Praia pôr do sol', en: 'beach sunset golden sky' },
+            { nome: 'Praia amanhecer', en: 'beach sunrise soft light' },
+            { nome: 'Costão rochoso', en: 'rocky coastline waves' },
+            { nome: 'Dunas areia', en: 'sand dunes beach' },
+            { nome: 'Trilha floresta', en: 'forest hiking trail' },
+            { nome: 'Caminho árvores', en: 'path tall trees' },
+            { nome: 'Clareira floresta', en: 'forest clearing sunlight' },
+            { nome: 'Floresta outono', en: 'autumn forest colorful leaves' },
+            { nome: 'Topo montanha', en: 'mountain summit panoramic view' },
+            { nome: 'Mirante vale', en: 'viewpoint overlooking valley' },
+            { nome: 'Montanha nevada', en: 'snowy mountain' },
+            { nome: 'Lago cristalino', en: 'crystal clear lake' },
+            { nome: 'Pier lago', en: 'lakeside wooden dock' },
+            { nome: 'Rio pesca', en: 'riverbank fishing spot' },
+            { nome: 'Cachoeira', en: 'tropical waterfall' },
+            { nome: 'Campo flores', en: 'wildflower meadow' },
+            { nome: 'Deserto dunas', en: 'desert golden dunes' },
+            { nome: 'Estrada rural', en: 'country road fields' },
+            { nome: 'Jardim botânico', en: 'botanical garden' }
+        ],
+        indoor: [
+            { nome: 'Sala aconchegante', en: 'cozy living room sofa' },
+            { nome: 'Sala minimalista', en: 'minimalist modern living room' },
+            { nome: 'Sala boho', en: 'bohemian room plants' },
+            { nome: 'Quarto luz janela', en: 'bedroom natural window light' },
+            { nome: 'Quarto minimalista', en: 'minimalist white bedroom' },
+            { nome: 'Varanda cidade', en: 'balcony city view' },
+            { nome: 'Varanda plantas', en: 'balcony plants hammock' },
+            { nome: 'Cozinha moderna', en: 'modern bright kitchen' },
+            { nome: 'Cantinho leitura', en: 'reading nook bookshelf' },
+            { nome: 'Home office', en: 'home office workspace' },
+            { nome: 'Setup gamer', en: 'gaming setup RGB lights' },
+            { nome: 'Sala TV', en: 'TV room cozy' },
+            { nome: 'Sala lareira', en: 'living room fireplace' },
+            { nome: 'Loft industrial', en: 'industrial loft' },
+            { nome: 'Cafeteria hipster', en: 'hipster coffee shop brick' },
+            { nome: 'Café parisiense', en: 'Parisian cafe' },
+            { nome: 'Bar cervejas', en: 'craft beer bar' },
+            { nome: 'Restaurante', en: 'restaurant interior' },
+            { nome: 'Livraria', en: 'cozy bookstore' },
+            { nome: 'Igreja', en: 'church interior stained glass' }
+        ]
+    },
+
+    superficies: [
+        { nome: 'Madeira clara', en: 'light oak wood surface' },
+        { nome: 'Madeira escura', en: 'dark walnut wood surface' },
+        { nome: 'Madeira branca', en: 'white painted wood' },
+        { nome: 'Mármore branco', en: 'white marble gray veins' },
+        { nome: 'Mármore preto', en: 'black marble gold veins' },
+        { nome: 'Concreto liso', en: 'smooth gray concrete' },
+        { nome: 'Concreto textura', en: 'textured concrete' },
+        { nome: 'Linho bege', en: 'beige linen fabric' },
+        { nome: 'Algodão branco', en: 'white cotton fabric' },
+        { nome: 'Algodão cinza', en: 'gray cotton fabric' },
+        { nome: 'Mesa café', en: 'coffee table with magazine and cup' },
+        { nome: 'Mesa plantas', en: 'table with plants' },
+        { nome: 'Areia praia', en: 'beach sand seashells' },
+        { nome: 'Grama verde', en: 'green grass lawn' },
+        { nome: 'Mesa trabalho', en: 'work desk laptop' }
+    ],
+
+    posesUniversais: [
+        { nome: 'Em pé relaxado', en: 'standing relaxed looking at camera natural posture' },
+        { nome: 'Andando', en: 'walking naturally candid movement' },
+        { nome: 'Encostado parede', en: 'leaning against wall casually' },
+        { nome: 'Sentado', en: 'sitting casually on bench or ledge' },
+        { nome: 'Rindo', en: 'laughing genuinely happy authentic' },
+        { nome: 'Olhando lado', en: 'looking to the side thoughtful' },
+        { nome: 'Mãos bolso', en: 'hands in pockets confident' },
+        { nome: 'Braços cruzados', en: 'arms crossed friendly' },
+        { nome: 'Ajustando roupa', en: 'adjusting shirt casually' },
+        { nome: 'Mexendo cabelo', en: 'hand through hair candid' }
+    ],
+
+    posesEspecificas: {
+        tenis: [
+            { nome: '🎾 Raquete ombro', en: 'holding tennis racket on shoulder' },
+            { nome: '🎾 Posição saque', en: 'tennis serve position' },
+            { nome: '🎾 Comemorando', en: 'celebrating point fist pump' },
+            { nome: '🎾 Toalha pescoço', en: 'towel around neck' },
+            { nome: '🎾 Segurando bola', en: 'holding tennis ball' }
+        ],
+        surf: [
+            { nome: '🏄 Prancha lado', en: 'holding surfboard at side' },
+            { nome: '🏄 Prancha cabeça', en: 'surfboard on head' },
+            { nome: '🏄 Olhando mar', en: 'looking at ocean' },
+            { nome: '🏄 Passando cera', en: 'waxing surfboard' },
+            { nome: '🏄 Saindo mar', en: 'walking from ocean' }
+        ],
+        fitness: [
+            { nome: '💪 Com halteres', en: 'holding dumbbells' },
+            { nome: '💪 Flexão bíceps', en: 'flexing biceps' },
+            { nome: '💪 Alongando', en: 'stretching arms' },
+            { nome: '💪 Bebendo água', en: 'drinking water bottle' },
+            { nome: '💪 Pós-treino', en: 'post workout towel' }
+        ],
+        futebol: [
+            { nome: '⚽ Pé na bola', en: 'foot on soccer ball' },
+            { nome: '⚽ Bola braço', en: 'ball under arm' },
+            { nome: '⚽ Comemorando gol', en: 'celebrating goal' },
+            { nome: '⚽ Mãos cintura', en: 'hands on hips' },
+            { nome: '⚽ Amarrando chuteira', en: 'tying cleats' }
+        ],
+        skate: [
+            { nome: '🛹 Skate mão', en: 'holding skateboard' },
+            { nome: '🛹 Skate braço', en: 'skateboard under arm' },
+            { nome: '🛹 Sentado skate', en: 'sitting on skateboard' },
+            { nome: '🛹 Pose trick', en: 'trick stance' },
+            { nome: '🛹 Andando', en: 'riding skateboard' }
+        ],
+        musica: [
+            { nome: '🎸 Com guitarra', en: 'holding electric guitar' },
+            { nome: '🎸 Com violão', en: 'playing acoustic guitar' },
+            { nome: '🎸 Fones ouvido', en: 'wearing headphones' },
+            { nome: '🎸 No microfone', en: 'singing microphone' },
+            { nome: '🎸 Com baquetas', en: 'holding drumsticks' }
+        ],
+        cafe: [
+            { nome: '☕ Caneca mãos', en: 'holding mug both hands' },
+            { nome: '☕ Soprando café', en: 'blowing hot coffee' },
+            { nome: '☕ Lendo livro', en: 'reading with coffee' },
+            { nome: '☕ No laptop', en: 'working laptop coffee' },
+            { nome: '☕ Olhando janela', en: 'looking window coffee' }
+        ],
+        cerveja: [
+            { nome: '🍺 Brindando', en: 'toasting cheers' },
+            { nome: '🍺 Long neck', en: 'holding beer bottle' },
+            { nome: '🍺 No bar', en: 'at bar counter' },
+            { nome: '🍺 Tomando gole', en: 'drinking beer' },
+            { nome: '🍺 Sorrindo copo', en: 'smiling with glass' }
+        ],
+        pets: [
+            { nome: '🐕 Abraçando dog', en: 'hugging dog' },
+            { nome: '🐕 Passeando', en: 'walking dog leash' },
+            { nome: '🐕 Brincando', en: 'playing with dog' },
+            { nome: '🐕 Dog no colo', en: 'dog on lap' },
+            { nome: '🐕 Selfie dog', en: 'selfie with dog' }
+        ],
+        gatos: [
+            { nome: '🐱 Gato colo', en: 'cat in lap' },
+            { nome: '🐱 Segurando gato', en: 'holding cat' },
+            { nome: '🐱 Gato ombro', en: 'cat on shoulder' },
+            { nome: '🐱 Brincando gato', en: 'playing with cat' },
+            { nome: '🐱 Carinho gato', en: 'petting cat' }
+        ],
+        viagem: [
+            { nome: '✈️ Com mochila', en: 'wearing backpack' },
+            { nome: '✈️ Olhando mapa', en: 'looking at map' },
+            { nome: '✈️ Tirando foto', en: 'taking photo camera' },
+            { nome: '✈️ Com mala', en: 'with luggage' },
+            { nome: '✈️ Braços abertos', en: 'arms open view' }
+        ],
+        natureza: [
+            { nome: '🌿 Respirando', en: 'breathing fresh air peaceful' },
+            { nome: '🌿 Abraçando árvore', en: 'hugging tree' },
+            { nome: '🌿 Na pedra', en: 'sitting on rock' },
+            { nome: '🌿 Meditando', en: 'meditating' },
+            { nome: '🌿 Na trilha', en: 'hiking trail' }
+        ],
+        games: [
+            { nome: '🎮 Com controle', en: 'holding controller' },
+            { nome: '🎮 Headset', en: 'wearing gaming headset' },
+            { nome: '🎮 Comemorando', en: 'celebrating victory' },
+            { nome: '🎮 Concentrado', en: 'focused gaming' },
+            { nome: '🎮 No setup', en: 'at gaming setup' }
+        ],
+        tech: [
+            { nome: '💻 No laptop', en: 'typing laptop' },
+            { nome: '💻 No celular', en: 'looking at phone' },
+            { nome: '💻 Com tablet', en: 'holding tablet' },
+            { nome: '💻 Codando', en: 'coding at monitor' },
+            { nome: '💻 Café trabalho', en: 'coffee laptop working' }
+        ],
+        gospel: [
+            { nome: '✝️ Orando', en: 'hands prayer peaceful' },
+            { nome: '✝️ Com bíblia', en: 'holding bible' },
+            { nome: '✝️ Olhos fechados', en: 'eyes closed faith' },
+            { nome: '✝️ Mãos ao céu', en: 'arms raised praising' },
+            { nome: '✝️ Lendo bíblia', en: 'reading scripture' }
+        ],
+        carros: [
+            { nome: '🏎️ Encostado carro', en: 'leaning on car' },
+            { nome: '🏎️ No volante', en: 'hand on steering wheel' },
+            { nome: '🏎️ Abrindo porta', en: 'opening car door' },
+            { nome: '🏎️ No capô', en: 'sitting on hood' },
+            { nome: '🏎️ Com chave', en: 'holding car keys' }
+        ],
+        motos: [
+            { nome: '🏍️ Na moto', en: 'sitting on motorcycle' },
+            { nome: '🏍️ Com capacete', en: 'holding helmet' },
+            { nome: '🏍️ Encostado moto', en: 'leaning on motorcycle' },
+            { nome: '🏍️ Colocando capacete', en: 'putting on helmet' },
+            { nome: '🏍️ Jaqueta couro', en: 'leather jacket biker' }
+        ],
+        churrasco: [
+            { nome: '🥩 Com espeto', en: 'holding meat skewer' },
+            { nome: '🥩 Na grelha', en: 'at barbecue grill' },
+            { nome: '🥩 Cerveja churrasco', en: 'beer at BBQ' },
+            { nome: '🥩 Com avental', en: 'wearing BBQ apron' },
+            { nome: '🥩 Cortando carne', en: 'slicing meat' }
+        ],
+        pesca: [
+            { nome: '🎣 Com vara', en: 'holding fishing rod' },
+            { nome: '🎣 Pescando', en: 'fishing focused' },
+            { nome: '🎣 Mostrando peixe', en: 'showing caught fish' },
+            { nome: '🎣 Sentado rio', en: 'sitting by river' },
+            { nome: '🎣 Preparando isca', en: 'preparing bait' }
+        ],
+        gastronomia: [
+            { nome: '🍕 Com prato', en: 'holding dish plate' },
+            { nome: '🍕 Provando', en: 'tasting food' },
+            { nome: '🍕 Cozinhando', en: 'cooking kitchen' },
+            { nome: '🍕 Avental chef', en: 'wearing chef apron' },
+            { nome: '🍕 Brindando vinho', en: 'toasting wine' }
+        ],
+        livros: [
+            { nome: '📚 Lendo', en: 'reading book absorbed' },
+            { nome: '📚 Pilha livros', en: 'stack of books' },
+            { nome: '📚 Livro peito', en: 'holding book chest' },
+            { nome: '📚 Na biblioteca', en: 'at library shelf' },
+            { nome: '📚 Café livro', en: 'coffee and book' }
+        ],
+        yoga: [
+            { nome: '🧘 Lótus', en: 'lotus position' },
+            { nome: '🧘 Namaste', en: 'namaste hands' },
+            { nome: '🧘 Warrior', en: 'warrior pose' },
+            { nome: '🧘 No tapete', en: 'on yoga mat' },
+            { nome: '🧘 Respirando', en: 'deep breathing' }
+        ],
+        crossfit: [
+            { nome: '🏋️ Levantando barra', en: 'lifting barbell' },
+            { nome: '🏋️ Kettlebell', en: 'kettlebell swing' },
+            { nome: '🏋️ Box jump', en: 'box jump' },
+            { nome: '🏋️ Battle rope', en: 'battle ropes' },
+            { nome: '🏋️ Pneu', en: 'tire flip' }
+        ],
+        signos: [
+            { nome: '♌ Olhando estrelas', en: 'looking at stars' },
+            { nome: '♌ Pose mística', en: 'mystical pose' },
+            { nome: '♌ Constelação', en: 'reaching constellation' },
+            { nome: '♌ Meditando cosmos', en: 'cosmic meditation' },
+            { nome: '♌ Lua fundo', en: 'moon background' }
+        ],
+        profissoes: [
+            { nome: '💼 De terno', en: 'wearing business suit' },
+            { nome: '💼 Jaleco', en: 'medical white coat' },
+            { nome: '💼 Capacete obra', en: 'hard hat engineer' },
+            { nome: '💼 Chef uniforme', en: 'chef uniform' },
+            { nome: '💼 Em reunião', en: 'business meeting' }
+        ],
+        outro: [
+            { nome: '✨ Pose natural', en: 'natural relaxed pose' },
+            { nome: '✨ Sorriso genuíno', en: 'genuine warm smile' },
+            { nome: '✨ Movimento', en: 'dynamic movement' },
+            { nome: '✨ Olhar confiante', en: 'confident look' },
+            { nome: '✨ Pose artística', en: 'artistic creative pose' }
+        ]
+    }
+};
+
+// ========== ESTADO ==========
+let state = {
+    nicho: null,
+    produto: null,
+    cor: null,
+    posicao: null,
+    tamanho: null,
+    modelo: null,
+    etnia: null,
+    idade: null,
+    expressao: null,
+    categoria: null,
+    cenario: null,
+    cenarioCustom: '',
+    superficie: null,
+    superficieCustom: '',
+    pose: null,
+    poseAI: false,
+    estilo: null,
+    luz: null,
+    angulo: null
+};
+
+let promptAtual = '';
+let historico = JSON.parse(localStorage.getItem('mf_hist') || '[]');
+let favoritos = JSON.parse(localStorage.getItem('mf_fav') || '[]');
+
+// ========== INICIALIZAÇÃO ==========
+document.addEventListener('DOMContentLoaded', init);
+
+function init() {
+    renderGrid('gridNicho', DATA.nichos, 'nicho');
+    renderGrid('gridProduto', DATA.produtos, 'produto');
+    renderCores();
+    renderGrid('gridPosicao', DATA.posicoes, 'posicao');
+    renderGrid('gridTamanho', DATA.tamanhos, 'tamanho');
+    renderGrid('gridModelo', DATA.modelos, 'modelo');
+    renderGrid('gridEtnia', DATA.etnias, 'etnia');
+    renderGrid('gridIdade', DATA.idades, 'idade');
+    renderGrid('gridExpressao', DATA.expressoes, 'expressao');
+    renderGrid('gridCategoria', DATA.categorias, 'categoria');
+    renderSuperficies();
+    renderGrid('gridEstilo', DATA.estilosFoto, 'estilo');
+    renderGrid('gridLuz', DATA.iluminacoes, 'luz');
+    renderGrid('gridAngulo', DATA.angulos, 'angulo');
+    renderPoses();
+    atualizarTabs();
+    exibirUsuarioLogado();
+
+    // Event listeners
+    document.getElementById('confirmCheck').addEventListener('change', function() {
+        document.getElementById('stickyConfirm').classList.toggle('confirmed', this.checked);
+        checkBotoes();
+    });
+    
+    document.getElementById('selCenario').addEventListener('change', function() {
+        state.cenario = this.value;
+        checkBotoes();
+    });
+    
+    document.getElementById('txtCenario').addEventListener('input', function() {
+        state.cenarioCustom = this.value;
+        checkBotoes();
+    });
+    
+    document.getElementById('selSuperficie').addEventListener('change', function() {
+        state.superficie = this.value;
+        checkBotoes();
+    });
+    
+    document.getElementById('txtSuperficie').addEventListener('input', function() {
+        state.superficieCustom = this.value;
+        checkBotoes();
+    });
+}
+
+// ========== AUTENTICAÇÃO ==========
+function exibirUsuarioLogado() {
+    try {
+        const sessao = JSON.parse(localStorage.getItem('promptforge_session') || '{}');
+        if (sessao.nome) {
+            const primeiroNome = sessao.nome.split(' ')[0];
+            document.getElementById('userGreeting').textContent = `Olá, ${primeiroNome}`;
+        }
+    } catch (e) {
+        console.log('Erro ao exibir usuário:', e);
+    }
+}
+
+function confirmarLogout() {
+    if (confirm('Deseja realmente sair?')) {
+        localStorage.removeItem('promptforge_session');
+        window.location.href = 'index.html';
+    }
+}
+
+// ========== RENDERIZAÇÃO ==========
+function renderGrid(id, items, campo) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = items.map(item => `
+        <div class="opt" data-id="${item.id}" onclick="selecionar('${campo}', '${item.id}')">
+            <span class="icon">${item.icon}</span>
+            <span>${item.nome}</span>
+        </div>
+    `).join('');
+}
+
+function renderCores() {
+    const el = document.getElementById('gridCor');
+    el.innerHTML = DATA.cores.map(c => `
+        <div class="color-opt" data-id="${c.id}" 
+             style="background:${c.hex};${c.light ? 'border:1px solid #999;' : ''}"
+             onclick="selecionar('cor', '${c.id}')"></div>
+    `).join('');
+}
+
+function renderSuperficies() {
+    const sel = document.getElementById('selSuperficie');
+    sel.innerHTML = '<option value="">Selecione...</option>' +
+        DATA.superficies.map((s, i) => `<option value="${i}">${s.nome}</option>`).join('');
+}
+
+function renderCenarios() {
+    const sel = document.getElementById('selCenario');
+    if (!state.categoria) {
+        sel.innerHTML = '<option value="">Escolha categoria primeiro...</option>';
+        return;
+    }
+    const lista = DATA.cenarios[state.categoria] || [];
+    sel.innerHTML = '<option value="">Selecione o cenário...</option>' +
+        lista.map((c, i) => `<option value="${i}">${c.nome}</option>`).join('');
+}
+
+function renderPoses() {
+    const container = document.getElementById('poseContainer');
+    if (!container) return;
+    
+    let html = '';
+    
+    // Poses específicas do nicho
+    if (state.nicho && DATA.posesEspecificas[state.nicho]) {
+        const nichoNome = DATA.nichos.find(n => n.id === state.nicho)?.nome || '';
+        html += `<div class="pose-group-title rec">🎯 Recomendadas para ${nichoNome}</div>`;
+        DATA.posesEspecificas[state.nicho].forEach((p, i) => {
+            const sel = state.pose === `esp_${i}` ? 'selected' : '';
+            html += `<div class="pose-opt ${sel}" onclick="selecionarPose('esp_${i}')">${p.nome}</div>`;
+        });
+    }
+    
+    // Poses universais
+    html += `<div class="pose-group-title uni">📌 Poses Universais</div>`;
+    DATA.posesUniversais.forEach((p, i) => {
+        const sel = state.pose === `uni_${i}` ? 'selected' : '';
+        html += `<div class="pose-opt ${sel}" onclick="selecionarPose('uni_${i}')">${p.nome}</div>`;
+    });
+    
+    // IA decide
+    const aiSel = state.poseAI ? 'selected' : '';
+    html += `<div class="pose-opt ai ${aiSel}" onclick="selecionarPoseAI()">🤖 Deixar a IA decidir</div>`;
+    
+    container.innerHTML = html;
+}
+
+// ========== SELEÇÃO ==========
+function selecionar(campo, valor) {
+    state[campo] = valor;
+    
+    // Atualizar visual
+    const gridMap = {
+        nicho: 'gridNicho',
+        produto: 'gridProduto',
+        cor: 'gridCor',
+        posicao: 'gridPosicao',
+        tamanho: 'gridTamanho',
+        modelo: 'gridModelo',
+        etnia: 'gridEtnia',
+        idade: 'gridIdade',
+        expressao: 'gridExpressao',
+        categoria: 'gridCategoria',
+        estilo: 'gridEstilo',
+        luz: 'gridLuz',
+        angulo: 'gridAngulo'
+    };
+    
+    const gridId = gridMap[campo];
+    if (gridId) {
+        const container = document.getElementById(gridId);
+        if (container) {
+            container.querySelectorAll('.opt, .color-opt').forEach(el => {
+                el.classList.toggle('selected', el.dataset.id === valor);
+            });
+        }
+    }
+    
+    // Lógica especial por campo
+    if (campo === 'nicho') {
+        atualizarCategorias();
+        renderPoses();
+    }
+    
+    if (campo === 'modelo') {
+        const isFlatLay = valor === 'flatlay';
+        document.getElementById('grpEtnia').classList.toggle('hidden', isFlatLay);
+        document.getElementById('grpIdade').classList.toggle('hidden', isFlatLay);
+        document.getElementById('grpExpressao').classList.toggle('hidden', isFlatLay);
+        document.getElementById('grpCategoria').classList.toggle('hidden', isFlatLay);
+        document.getElementById('grpCenario').classList.toggle('hidden', isFlatLay);
+        document.getElementById('grpPose').classList.toggle('hidden', isFlatLay);
+        document.getElementById('grpSuperficie').classList.toggle('hidden', !isFlatLay);
+    }
+    
+    if (campo === 'categoria') {
+        renderCenarios();
+        state.cenario = null;
+    }
+    
+    checkBotoes();
+}
+
+function selecionarPose(id) {
+    state.pose = id;
+    state.poseAI = false;
+    renderPoses();
+    checkBotoes();
+}
+
+function selecionarPoseAI() {
+    state.poseAI = true;
+    state.pose = null;
+    renderPoses();
+    checkBotoes();
+}
+
+function atualizarCategorias() {
+    const permitidas = DATA.nichoCategorias[state.nicho] || Object.keys(DATA.cenarios);
+    const container = document.getElementById('gridCategoria');
+    
+    container.querySelectorAll('.opt').forEach(el => {
+        const permitido = permitidas.includes(el.dataset.id);
+        el.classList.toggle('disabled', !permitido);
+    });
+    
+    // Reset categoria se não permitida
+    if (state.categoria && !permitidas.includes(state.categoria)) {
+        state.categoria = null;
+        container.querySelectorAll('.opt').forEach(el => el.classList.remove('selected'));
+        renderCenarios();
+    }
+}
+
+// ========== UI HELPERS ==========
+function toggleSection(id) {
+    document.getElementById(id).classList.toggle('open');
+}
+
+function checkBotoes() {
+    const confirmed = document.getElementById('confirmCheck').checked;
+    const isFlatLay = state.modelo === 'flatlay';
+    
+    let pronto = confirmed && 
+                 state.nicho && 
+                 state.produto && 
+                 state.cor && 
+                 state.posicao && 
+                 state.tamanho && 
+                 state.modelo && 
+                 state.estilo && 
+                 state.luz && 
+                 state.angulo;
+    
+    if (isFlatLay) {
+        pronto = pronto && (state.superficie !== null || state.superficieCustom);
+    } else {
+        pronto = pronto && 
+                 state.etnia && 
+                 state.idade && 
+                 state.expressao &&
+                 (state.cenario !== null || state.cenarioCustom) && 
+                 (state.pose || state.poseAI);
+    }
+    
+    document.getElementById('btnGerar').disabled = !pronto;
+    document.getElementById('btnVariacoes').disabled = !pronto;
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+function atualizarTabs() {
+    document.getElementById('countHist').textContent = historico.length;
+    document.getElementById('countFav').textContent = favoritos.length;
+    
+    // Histórico
+    const histEl = document.getElementById('tabHistorico');
+    if (historico.length === 0) {
+        histEl.innerHTML = '<div class="empty"><div class="icon">📜</div><p>Nenhum prompt gerado</p></div>';
+    } else {
+        histEl.innerHTML = historico.slice().reverse().map((item, i) => `
+            <div class="saved-item">
+                <div class="saved-item-header">
+                    <span class="saved-item-name">Prompt #${historico.length - i}</span>
+                    <span class="saved-item-date">${item.data}</span>
+                </div>
+                <div class="saved-item-preview">${item.prompt.substring(0, 100)}...</div>
+                <div class="saved-item-actions">
+                    <button onclick="copiarTexto(\`${encodeURIComponent(item.prompt)}\`)">📋 Copiar</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Favoritos
+    const favEl = document.getElementById('listaFavoritos');
+    if (favoritos.length === 0) {
+        favEl.innerHTML = '<div class="empty"><div class="icon">⭐</div><p>Nenhum favorito</p></div>';
+    } else {
+        favEl.innerHTML = favoritos.map((item, i) => `
+            <div class="saved-item">
+                <div class="saved-item-header">
+                    <span class="saved-item-name">${item.nome}</span>
+                    <span class="saved-item-date">${item.data}</span>
+                </div>
+                <div class="saved-item-preview">${item.prompt.substring(0, 100)}...</div>
+                <div class="saved-item-actions">
+                    <button onclick="copiarTexto(\`${encodeURIComponent(item.prompt)}\`)">📋 Copiar</button>
+                    <button class="del" onclick="removerFavorito(${i})">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    document.getElementById('btnExport').disabled = favoritos.length === 0;
+}
+
+// ========== RANDOM ==========
+function randomCenario() {
+    if (!state.categoria) {
+        toast('Escolha uma categoria primeiro!', true);
+        return;
+    }
+    const lista = DATA.cenarios[state.categoria];
+    const idx = Math.floor(Math.random() * lista.length);
+    document.getElementById('selCenario').value = idx;
+    state.cenario = idx.toString();
+    checkBotoes();
+    toast('🎲 Cenário sorteado!');
+}
+
+function randomSuperficie() {
+    const idx = Math.floor(Math.random() * DATA.superficies.length);
+    document.getElementById('selSuperficie').value = idx;
+    state.superficie = idx.toString();
+    checkBotoes();
+    toast('🎲 Superfície sorteada!');
+}
+
+// ========== GERAÇÃO DE PROMPT ==========
+function gerarPrompt() {
+    promptAtual = construirPrompt();
+    
+    // Salvar no histórico
+    historico.push({
+        prompt: promptAtual,
+        data: new Date().toLocaleString('pt-BR')
+    });
+    if (historico.length > 20) historico.shift();
+    localStorage.setItem('mf_hist', JSON.stringify(historico));
+    
+    // Mostrar resultado
+    const el = document.getElementById('resultado');
+    el.innerHTML = `
+        <h3>📋 Prompt Gerado</h3>
+        <div class="prompt-box">${promptAtual}</div>
+        <div class="result-actions">
+            <button class="btn-copy" onclick="copiarPrompt()">📋 Copiar</button>
+            <button class="btn-copy" onclick="abrirGemini()" style="background: linear-gradient(135deg, #4285f4, #34a853);">🚀 Abrir Gemini</button>
+            <button class="btn-fav" onclick="abrirModal()">⭐ Salvar</button>
+        </div>
+    `;
+    el.classList.add('show');
+    el.scrollIntoView({ behavior: 'smooth' });
+    
+    atualizarTabs();
+    toast('✅ Prompt gerado!');
+}
+
+function gerarVariacoes() {
+    const prompts = [];
+    for (let i = 0; i < 3; i++) {
+        prompts.push(construirPrompt(true));
+    }
+    
+    // Salvar no histórico
+    prompts.forEach(p => {
+        historico.push({
+            prompt: p,
+            data: new Date().toLocaleString('pt-BR')
+        });
+    });
+    if (historico.length > 20) historico = historico.slice(-20);
+    localStorage.setItem('mf_hist', JSON.stringify(historico));
+    
+    // Mostrar resultado
+    const el = document.getElementById('resultado');
+    el.innerHTML = `
+        <h3>🎲 3 Variações Geradas</h3>
+        ${prompts.map((p, i) => `
+            <div class="variation">
+                <div class="variation-label">Variação ${i + 1}</div>
+                <div class="prompt-box">${p}</div>
+                <div class="result-actions">
+                    <button class="btn-copy" onclick="copiarTexto(\`${encodeURIComponent(p)}\`)">📋 Copiar</button>
+                </div>
+            </div>
+        `).join('')}
+    `;
+    el.classList.add('show');
+    el.scrollIntoView({ behavior: 'smooth' });
+    
+    atualizarTabs();
+    toast('✅ 3 variações geradas!');
+}
+
+function construirPrompt(variar = false) {
+    const isFlatLay = state.modelo === 'flatlay';
+    
+    const produto = DATA.produtos.find(p => p.id === state.produto);
+    const cor = DATA.cores.find(c => c.id === state.cor);
+    const posicao = DATA.posicoes.find(p => p.id === state.posicao);
+    const tamanho = DATA.tamanhos.find(t => t.id === state.tamanho);
+    const estilo = DATA.estilosFoto.find(e => e.id === state.estilo);
+    const luz = DATA.iluminacoes.find(l => l.id === state.luz);
+    const angulo = DATA.angulos.find(a => a.id === state.angulo);
+    
+    let prompt = 'Using the attached image as the design/print to apply on the product, create a realistic mockup photograph.\n\n';
+    
+    // Produto
+    prompt += `PRODUCT: ${cor.en} ${produto.en}\n`;
+    prompt += `PRINT PLACEMENT: ${posicao.en}, ${tamanho.en}\n`;
+    
+    if (isFlatLay) {
+        // Flat Lay
+        let superficie = state.superficieCustom;
+        if (!superficie && state.superficie !== null) {
+            const idx = parseInt(state.superficie);
+            superficie = DATA.superficies[idx]?.en || 'wooden surface';
+        }
+        if (variar && !state.superficieCustom) {
+            const randomIdx = Math.floor(Math.random() * DATA.superficies.length);
+            superficie = DATA.superficies[randomIdx].en;
+        }
+        
+        prompt += `STYLE: Flat lay product photography, top-down view\n`;
+        prompt += `SURFACE: ${superficie}\n`;
+    } else {
+        // Com modelo
+        const modelo = DATA.modelos.find(m => m.id === state.modelo);
+        const etnia = DATA.etnias.find(e => e.id === state.etnia);
+        const idade = DATA.idades.find(i => i.id === state.idade);
+        const expressao = DATA.expressoes.find(e => e.id === state.expressao);
+        
+        prompt += `MODEL: ${etnia.en} ${modelo.en} ${idade.en}\n`;
+        prompt += `EXPRESSION: ${expressao.en}\n`;
+        
+        // Cenário
+        let cenario = state.cenarioCustom;
+        if (!cenario && state.cenario !== null) {
+            const idx = parseInt(state.cenario);
+            cenario = DATA.cenarios[state.categoria]?.[idx]?.en || 'studio background';
+        }
+        if (variar && !state.cenarioCustom && state.categoria) {
+            const lista = DATA.cenarios[state.categoria];
+            const randomIdx = Math.floor(Math.random() * lista.length);
+            cenario = lista[randomIdx].en;
+        }
+        prompt += `LOCATION: ${cenario}\n`;
+        
+        // Pose
+        let pose = '';
+        if (state.poseAI) {
+            pose = 'natural candid pose, authentic relaxed moment';
+        } else if (state.pose) {
+            if (state.pose.startsWith('esp_')) {
+                const idx = parseInt(state.pose.split('_')[1]);
+                pose = DATA.posesEspecificas[state.nicho]?.[idx]?.en || 'natural pose';
+            } else {
+                const idx = parseInt(state.pose.split('_')[1]);
+                pose = DATA.posesUniversais[idx]?.en || 'natural pose';
+            }
+        }
+        if (variar && !state.poseAI) {
+            const allPoses = [
+                ...DATA.posesUniversais,
+                ...(DATA.posesEspecificas[state.nicho] || [])
+            ];
+            const randomIdx = Math.floor(Math.random() * allPoses.length);
+            pose = allPoses[randomIdx].en;
+        }
+        prompt += `POSE: ${pose}\n`;
+    }
+    
+    // Fotografia
+    prompt += `CAMERA ANGLE: ${angulo.en}\n`;
+    prompt += `LIGHTING: ${luz.en}\n`;
+    prompt += `PHOTO STYLE: ${estilo.en}\n`;
+    
+    // Instruções finais
+    prompt += `\nIMPORTANT: The print must be realistically integrated into the fabric, following natural wrinkles and body contours. Photorealistic quality, high resolution, professional mockup.`;
+    
+    return prompt;
+}
+
+// ========== COPIAR ==========
+function copiarPrompt() {
+    navigator.clipboard.writeText(promptAtual).then(() => {
+        toast('📋 Copiado!');
+    });
+}
+
+function copiarTexto(encoded) {
+    const texto = decodeURIComponent(encoded);
+    navigator.clipboard.writeText(texto).then(() => {
+        toast('📋 Copiado!');
+    });
+}
+
+// ========== ABRIR GEMINI ==========
+function abrirGemini() {
+    navigator.clipboard.writeText(promptAtual).then(() => {
+        toast('✅ Prompt copiado! Cole no Gemini com Ctrl+V');
+        window.open('https://gemini.google.com/app', '_blank');
+    });
+}
+
+// ========== FAVORITOS ==========
+function abrirModal() {
+    document.getElementById('modal').classList.add('show');
+    document.getElementById('inputNomeFav').value = '';
+    document.getElementById('inputNomeFav').focus();
+}
+
+function fecharModal() {
+    document.getElementById('modal').classList.remove('show');
+}
+
+function salvarFavorito() {
+    const nome = document.getElementById('inputNomeFav').value.trim() || 'Favorito ' + (favoritos.length + 1);
+    
+    favoritos.push({
+        nome: nome,
+        prompt: promptAtual,
+        data: new Date().toLocaleString('pt-BR')
+    });
+    
+    localStorage.setItem('mf_fav', JSON.stringify(favoritos));
+    fecharModal();
+    atualizarTabs();
+    toast('⭐ Salvo nos favoritos!');
+}
+
+function removerFavorito(index) {
+    favoritos.splice(index, 1);
+    localStorage.setItem('mf_fav', JSON.stringify(favoritos));
+    atualizarTabs();
+    toast('🗑️ Removido!');
+}
+
+function exportarFavoritos() {
+    if (favoritos.length === 0) return;
+    
+    let txt = '╔══════════════════════════════════════════════════════════════╗\n';
+    txt += '║  ⭐ MOCKUPFORGE v2 - FAVORITOS EXPORTADOS                     ║\n';
+    txt += '║  📅 ' + new Date().toLocaleString('pt-BR').padEnd(52) + '║\n';
+    txt += '╚══════════════════════════════════════════════════════════════╝\n\n';
+    
+    favoritos.forEach((fav, i) => {
+        txt += '━'.repeat(60) + '\n';
+        txt += `⭐ ${fav.nome}\n`;
+        txt += `📅 ${fav.data}\n`;
+        txt += '━'.repeat(60) + '\n\n';
+        txt += fav.prompt + '\n\n';
+        txt += '\n';
+    });
+    
+    txt += '═'.repeat(60) + '\n';
+    txt += `📊 Total: ${favoritos.length} favoritos\n`;
+    txt += '🔗 Gerado por MockupForge v2 - POD Tools\n';
+    
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'mockupforge-favoritos.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast('📤 Exportado!');
+}
+
+// ========== TOAST ==========
+function toast(msg, isError = false) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ========== EVENTOS GLOBAIS ==========
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fecharModal();
+});
+
+document.getElementById('modal').addEventListener('click', (e) => {
+    if (e.target.id === 'modal') fecharModal();
+});
+
+    </script>
+</body>
+</html>

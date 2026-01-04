@@ -40,7 +40,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     min-height: 100vh;
-    padding: 20px;
+    padding: 80px 20px 20px 20px; /* ALTERADO: padding-top maior para a top-bar */
     color: var(--text-primary);
     transition: background 0.3s ease, color 0.3s ease;
 }
@@ -1750,5 +1750,109 @@ footer {
         height: 28px;
         min-width: 28px;
         font-size: 0.8rem;
+    }
+}
+
+/* ==================== NAVEGAÇÃO INTEGRADA - POD TOOLS ==================== */
+
+.top-bar {
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.top-bar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-nav {
+    display: flex;
+    gap: 5px;
+}
+
+.nav-item {
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.nav-item:hover {
+    color: var(--text-primary);
+    background: var(--bg-card);
+}
+
+.nav-item.active {
+    color: var(--accent-primary);
+    background: rgba(0, 242, 96, 0.1);
+    border-color: rgba(0, 242, 96, 0.3);
+}
+
+/* User Area na Top Bar */
+.top-bar .user-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-bar .user-greeting {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: none;
+}
+
+@media (min-width: 400px) {
+    .top-bar .user-greeting {
+        display: block;
+    }
+}
+
+.top-bar .btn-logout {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.top-bar .btn-logout:hover {
+    border-color: var(--accent-tertiary);
+    color: var(--accent-tertiary);
+}
+
+/* Ajuste do body para não ficar atrás da top-bar */
+body {
+    padding-top: 60px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 400px) {
+    .nav-item {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .top-bar {
+        padding: 10px 12px;
     }
 }

@@ -141,14 +141,25 @@ async function verificarAutenticacao() {
         return null;
     }
     
-    // SEMPRE verifica no servidor se ainda está ativo
+    // NOVO: Verifica se já validou recentemente (últimos 5 minutos)
+    const agora = new Date().getTime();
+    const ultimaValidacao = sessao.verificadoEm || 0;
+    const cincoMinutos = 5 * 60 * 1000; // 5 minutos em milissegundos
+    
+    if (agora - ultimaValidacao < cincoMinutos) {
+        // Validação recente, não precisa verificar no servidor
+        console.log('✅ Sessão válida (cache)');
+        return sessao;
+    }
+    
+    // Validação expirou, verifica no servidor
     try {
         const url = `${AUTH_CONFIG.apiUrl}?action=login&email=${encodeURIComponent(sessao.email)}`;
         const response = await fetch(url);
         const data = await response.json();
         
         if (data.sucesso) {
-            // Atualiza sessão
+            // Atualiza sessão com novo timestamp
             salvarSessao({
                 email: data.usuario.email,
                 nome: data.usuario.nome,
@@ -167,8 +178,16 @@ async function verificarAutenticacao() {
         }
         
     } catch (error) {
-        // Erro de conexão - bloqueia acesso
-        console.error('Erro ao verificar:', error);
+        // Erro de conexão - USA O CACHE se tiver sessão válida
+        console.warn('⚠️ Erro de conexão, usando sessão em cache');
+        
+        // Se tem sessão salva, permite continuar (modo offline tolerante)
+        if (sessao && sessao.email && sessao.nome) {
+            console.log('✅ Continuando com sessão em cache (offline)');
+            return sessao;
+        }
+        
+        // Sem sessão válida, bloqueia
         limparSessao();
         alert('❌ Erro de conexão. Faça login novamente.');
         window.location.href = 'index.html';
