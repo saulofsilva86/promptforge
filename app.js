@@ -41,7 +41,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Configurar eventos
     setupEventListeners();
-    
+    // No início do setupEventListeners(), adicione:
+
+// NOVO: Botão Como Usar
+document.getElementById('btnComoUsar')?.addEventListener('click', () => abrirModal('modalComoUsar'));
+
+// NOVO: Tabs do tutorial
+document.querySelectorAll('.tutorial-tab').forEach(tab => {
+    tab.addEventListener('click', () => trocarTabTutorial(tab.dataset.tab));
+});
     // Atualizar contador
     atualizarContador();
     
@@ -1277,6 +1285,26 @@ function confirmarLogout() {
     if (confirm('Tem certeza que deseja sair?')) {
         fazerLogout();
     }
+}
+
+// ==================== TUTORIAL / COMO USAR ====================
+
+function trocarTabTutorial(tabId) {
+    // Remove active de todas as tabs
+    document.querySelectorAll('.tutorial-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active de todos os conteúdos
+    document.querySelectorAll('.tutorial-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Ativa a tab clicada
+    document.querySelector(`.tutorial-tab[data-tab="${tabId}"]`)?.classList.add('active');
+    
+    // Ativa o conteúdo correspondente
+    document.getElementById(`tab-${tabId}`)?.classList.add('active');
 }
 
 // ==================== FIM DO APP.JS ====================

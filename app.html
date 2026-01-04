@@ -317,19 +317,23 @@
 
             <!-- Result Actions -->
             <div class="result-actions">
-                <button class="btn-action" id="btnCopiarTodos">
-                    📋 Copiar Todos
-                </button>
-                <button class="btn-action" id="btnFavoritar">
-                    ⭐ Favoritar
-                </button>
-                <button class="btn-action" id="btnExportar">
-                    📤 Exportar
-                </button>
-                <button class="btn-action" id="btnNegative">
-                    🚫 Negative Prompt
-                </button>
-            </div>
+    <button class="btn-action" id="btnCopiarTodos">
+        📋 Copiar Todos
+    </button>
+    <button class="btn-action" id="btnFavoritar">
+        ⭐ Favoritar
+    </button>
+    <button class="btn-action" id="btnExportar">
+        📤 Exportar
+    </button>
+    <button class="btn-action" id="btnNegative">
+        🚫 Negative Prompt
+    </button>
+    <!-- NOVO: Botão Como Usar -->
+    <button class="btn-action btn-help" id="btnComoUsar">
+        📖 Como Usar
+    </button>
+</div>
 
             <!-- Info Box -->
             <div class="info-box" id="infoBox">
@@ -467,5 +471,450 @@
     <!-- SCRIPTS -->
     <script src="data.js"></script>
     <script src="app.js"></script>
+
+<!-- Modal Como Usar -->
+<div class="modal" id="modalComoUsar">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3>📖 Como Usar os Prompts</h3>
+            <button class="modal-close" data-modal="modalComoUsar">✕</button>
+        </div>
+        <div class="modal-body">
+            <!-- Tabs de navegação -->
+            <div class="tutorial-tabs">
+                <button class="tutorial-tab active" data-tab="leonardo">🎨 Leonardo.ai</button>
+                <button class="tutorial-tab" data-tab="midjourney">🎭 Midjourney</button>
+                <button class="tutorial-tab" data-tab="gemini">🍌 Gemini</button>
+                <button class="tutorial-tab" data-tab="preparar">✂️ Preparar Estampa</button>
+            </div>
+
+            <!-- Conteúdo Leonardo -->
+            <div class="tutorial-content active" id="tab-leonardo">
+                <h4>🎨 Passo a Passo - Leonardo.ai</h4>
+                
+                <div class="tutorial-step">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <strong>Acesse o Leonardo.ai</strong>
+                        <p>Vá para <a href="https://leonardo.ai" target="_blank">leonardo.ai</a> e faça login</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <strong>Clique em "AI Image Generation"</strong>
+                        <p>No menu lateral, selecione a opção de geração de imagens</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <strong>Cole o prompt</strong>
+                        <p>Copie o prompt gerado e cole no campo de texto</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                        <strong>IMPORTANTE: Escolha o modelo certo!</strong>
+                        <p>Use o modelo sugerido na dica abaixo do prompt (ex: Leonardo Diffusion XL, Anime Pastel Dream)</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">4</span>
+                    <div class="step-content">
+                        <strong>Configure as opções</strong>
+                        <p>Resolução: <code>1024x1024</code> ou <code>768x1024</code></p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">5</span>
+                    <div class="step-content">
+                        <strong>Adicione o Negative Prompt</strong>
+                        <p>Clique em "Negative Prompt" e cole o texto do botão 🚫</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert success">
+                    <span class="alert-icon">💡</span>
+                    <div class="alert-content">
+                        <strong>DICA PRO</strong>
+                        <p>Gere 4 variações de uma vez e escolha a melhor!</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">6</span>
+                    <div class="step-content">
+                        <strong>Clique em "Generate"</strong>
+                        <p>Aguarde a geração e baixe a imagem que mais gostar</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo Midjourney -->
+            <div class="tutorial-content" id="tab-midjourney">
+                <h4>🎭 Passo a Passo - Midjourney</h4>
+                
+                <div class="tutorial-step">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <strong>Acesse o Discord do Midjourney</strong>
+                        <p>Entre no servidor oficial ou use em servidor próprio com o bot</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <strong>Digite /imagine</strong>
+                        <p>No canal de geração, digite <code>/imagine</code> e aguarde aparecer o comando</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <strong>Cole o prompt</strong>
+                        <p>No campo "prompt", cole o texto copiado do PromptForge</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                        <strong>NÃO MODIFIQUE OS PARÂMETROS!</strong>
+                        <p>O prompt já vem com <code>--ar</code>, <code>--v</code> e <code>--style</code> configurados. Não altere!</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">4</span>
+                    <div class="step-content">
+                        <strong>Pressione Enter</strong>
+                        <p>Aguarde ~60 segundos para a geração</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">5</span>
+                    <div class="step-content">
+                        <strong>Escolha a melhor variação</strong>
+                        <p>Clique em <code>U1</code>, <code>U2</code>, <code>U3</code> ou <code>U4</code> para fazer upscale</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert success">
+                    <span class="alert-icon">💡</span>
+                    <div class="alert-content">
+                        <strong>DICA PRO</strong>
+                        <p>Use <code>V1-V4</code> para gerar variações da imagem que mais gostou!</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">6</span>
+                    <div class="step-content">
+                        <strong>Baixe a imagem</strong>
+                        <p>Clique na imagem → "Abrir original" → Salvar</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo Gemini -->
+            <div class="tutorial-content" id="tab-gemini">
+                <h4>🍌 Passo a Passo - Gemini (Google)</h4>
+                
+                <div class="tutorial-step">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <strong>Acesse o Gemini</strong>
+                        <p>Vá para <a href="https://gemini.google.com" target="_blank">gemini.google.com</a></p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <strong>Cole o prompt</strong>
+                        <p>Use o botão "🚀 Abrir no Gemini" que já copia automaticamente!</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert info">
+                    <span class="alert-icon">📱</span>
+                    <div class="alert-content">
+                        <strong>NO CELULAR</strong>
+                        <p>O prompt é copiado automaticamente. Só colar com Ctrl+V ou segurar e "Colar"</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <strong>Envie e aguarde</strong>
+                        <p>O Gemini vai gerar a imagem diretamente na conversa</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert success">
+                    <span class="alert-icon">💡</span>
+                    <div class="alert-content">
+                        <strong>DICA PRO</strong>
+                        <p>Peça "gere mais 4 variações" se não gostar do resultado!</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">4</span>
+                    <div class="step-content">
+                        <strong>Baixe a imagem</strong>
+                        <p>Clique na imagem gerada → botão de download</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                        <strong>SE O GEMINI RECUSAR GERAR</strong>
+                        <p>Às vezes o Gemini recusa ou gera imagens com erros. Se isso acontecer, tente reformular ou use Leonardo/Midjourney</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert danger">
+                    <span class="alert-icon">🚨</span>
+                    <div class="alert-content">
+                        <strong>DEU ERRO NA ESTAMPA? FAÇA ISSO:</strong>
+                        <p>
+                            1. <strong>Inicie uma NOVA CONVERSA</strong> (clique em "Nova conversa" ou "+")<br>
+                            2. Cole o <strong>MESMO prompt</strong> novamente<br>
+                            3. O Gemini vai gerar um resultado completamente diferente!<br><br>
+                            <em>💡 Cada conversa nova = nova "semente" de geração = resultado diferente</em>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="tutorial-divider">
+                    <span>QUANDO USAR O GEMINI?</span>
+                </div>
+
+                <div class="tutorial-alert success">
+                    <span class="alert-icon">✅</span>
+                    <div class="alert-content">
+                        <strong>GEMINI É ÓTIMO PARA:</strong>
+                        <p>
+                            • Estilos de humor e memes brasileiros<br>
+                            • Quando precisa de texto em português na imagem<br>
+                            • Iterações rápidas (pedir ajustes na mesma conversa)<br>
+                            • Usuários sem assinatura de Leonardo/Midjourney
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo Preparar Estampa -->
+            <div class="tutorial-content" id="tab-preparar">
+                <h4>✂️ Preparar Estampa para Impressão (Canva)</h4>
+                
+                <div class="tutorial-alert warning">
+                    <span class="alert-icon">🎯</span>
+                    <div class="alert-content">
+                        <strong>OBJETIVO</strong>
+                        <p>Remover o fundo da imagem e salvar em PNG transparente no formato A4 para usar no MockupForge</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-divider">
+                    <span>PARTE 1: Criar documento no Canva</span>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <strong>Acesse o Canva</strong>
+                        <p>Vá para <a href="https://canva.com" target="_blank">canva.com</a> e faça login</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <strong>Crie um design A4</strong>
+                        <p>Clique em <code>Criar um design</code> → <code>Documento A4</code> (21 x 29,7 cm)</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert info">
+                    <span class="alert-icon">📐</span>
+                    <div class="alert-content">
+                        <strong>POR QUE A4?</strong>
+                        <p>É o formato padrão para impressão DTF/DTG e funciona perfeitamente no MockupForge</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-divider">
+                    <span>PARTE 2: Importar e ajustar imagem</span>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <strong>Faça upload da imagem gerada</strong>
+                        <p>Clique em <code>Uploads</code> → <code>Fazer upload de arquivos</code> → Selecione a imagem da IA</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">4</span>
+                    <div class="step-content">
+                        <strong>Arraste a imagem para o canvas</strong>
+                        <p>Posicione no centro e ajuste o tamanho conforme necessário</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert success">
+                    <span class="alert-icon">💡</span>
+                    <div class="alert-content">
+                        <strong>DICA DE TAMANHO</strong>
+                        <p>Para estampas de camiseta, a imagem geralmente ocupa 60-80% da largura do A4</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-divider">
+                    <span>PARTE 3: Remover fundo</span>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">5</span>
+                    <div class="step-content">
+                        <strong>Selecione a imagem</strong>
+                        <p>Clique na imagem para selecioná-la</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">6</span>
+                    <div class="step-content">
+                        <strong>Clique em "Editar imagem"</strong>
+                        <p>Na barra superior, clique em <code>Editar imagem</code></p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">7</span>
+                    <div class="step-content">
+                        <strong>Selecione "Remover fundo" (BG Remover)</strong>
+                        <p>Clique em <code>Remover fundo</code> e aguarde o processamento</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                        <strong>RECURSO PRO</strong>
+                        <p>O "Remover fundo" é um recurso do Canva Pro. Se não tiver, use o <a href="https://remove.bg" target="_blank">remove.bg</a> (grátis) antes de importar</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-divider">
+                    <span>PARTE 4: Exportar PNG transparente</span>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">8</span>
+                    <div class="step-content">
+                        <strong>Clique em "Compartilhar"</strong>
+                        <p>No canto superior direito, clique em <code>Compartilhar</code></p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">9</span>
+                    <div class="step-content">
+                        <strong>Selecione "Baixar"</strong>
+                        <p>Clique em <code>Baixar</code></p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">10</span>
+                    <div class="step-content">
+                        <strong>Configure o download</strong>
+                        <p>
+                            • Tipo de arquivo: <code>PNG</code><br>
+                            • ✅ Marque <code>Fundo transparente</code><br>
+                            • Tamanho: <code>1x</code> ou <code>2x</code> para mais qualidade
+                        </p>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert danger">
+                    <span class="alert-icon">🚨</span>
+                    <div class="alert-content">
+                        <strong>NÃO ESQUEÇA!</strong>
+                        <p>Marcar "Fundo transparente" é OBRIGATÓRIO! Sem isso, a estampa vai ter fundo branco</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <span class="step-number">11</span>
+                    <div class="step-content">
+                        <strong>Clique em "Baixar"</strong>
+                        <p>Pronto! Sua estampa está preparada para o MockupForge 🎉</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-divider">
+                    <span>RESUMO RÁPIDO</span>
+                </div>
+
+                <div class="tutorial-summary">
+                    <div class="summary-item">
+                        <span class="summary-icon">1️⃣</span>
+                        <span>Criar documento A4 no Canva</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-icon">2️⃣</span>
+                        <span>Upload da imagem gerada pela IA</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-icon">3️⃣</span>
+                        <span>Remover fundo (BG Remover ou remove.bg)</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-icon">4️⃣</span>
+                        <span>Exportar PNG com fundo transparente</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-icon">5️⃣</span>
+                        <span>Usar no MockupForge! 🚀</span>
+                    </div>
+                </div>
+
+                <div class="tutorial-alert danger">
+                    <span class="alert-icon">🚨</span>
+                    <div class="alert-content">
+                        <strong>IMAGEM COM ERRO OU DEFEITO?</strong>
+                        <p>
+                            Se a IA gerou uma imagem com problemas:<br><br>
+                            1. <strong>Volte para a IA</strong> (Gemini, Leonardo ou Midjourney)<br>
+                            2. <strong>Inicie uma NOVA CONVERSA</strong> (no Gemini) ou gere novamente<br>
+                            3. <strong>Cole o MESMO prompt</strong><br>
+                            4. Cada geração produz um resultado diferente!<br><br>
+                            <em>💡 Repita até conseguir uma estampa perfeita</em>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
