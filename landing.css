@@ -16,41 +16,83 @@ body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta San
 /* NAVBAR */
 .navbar { padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
-.logo-group { display: flex; align-items: center; gap: 12px; }
-.nav-logo-img { width: 32px; height: 32px; border-radius: 6px; }
-.logo { font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; }
+.logo-group { display: flex; align-items: center; gap: 15px; }
+.brand-icon { width: 40px; height: 40px; border-radius: 8px; }
+.logo { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
 .logo span { color: var(--accent); }
-.btn-acesso { text-decoration: none; color: var(--text); font-weight: 600; border: 1px solid #333; padding: 10px 22px; border-radius: 50px; transition: 0.3s; }
+.btn-acesso { text-decoration: none; color: #fff; border: 1px solid #333; padding: 10px 25px; border-radius: 50px; font-weight: 600; transition: 0.3s; }
 .btn-acesso:hover { background: #fff; color: #000; }
 
 /* HERO */
 .hero { padding: 80px 0; text-align: center; }
-.badge { background: rgba(0, 242, 96, 0.1); color: var(--accent); padding: 6px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; display: inline-block; margin-bottom: 25px; }
-.hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.1; margin-bottom: 30px; letter-spacing: -2px; }
-.hero p { color: var(--text-dim); font-size: 1.2rem; max-width: 650px; margin: 0 auto 40px; }
+.badge { background: rgba(0, 242, 96, 0.1); color: var(--accent); padding: 8px 18px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; display: inline-block; margin-bottom: 30px; }
+.hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1; letter-spacing: -3px; margin-bottom: 30px; }
+.hero p { color: var(--text-dim); font-size: 1.3rem; max-width: 700px; margin: 0 auto 40px; line-height: 1.6; }
 .cta-group { display: flex; justify-content: center; gap: 15px; }
 
-.btn { padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; transition: 0.3s; display: inline-block; }
+.btn { padding: 18px 38px; border-radius: 14px; text-decoration: none; font-weight: 700; transition: 0.3s; }
 .btn-primary { background: #fff; color: #000; }
 .btn-secondary { color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn:hover { transform: translateY(-3px); }
 
 /* CARROSSEL */
 .carousel-container { width: 100%; overflow: hidden; padding: 40px 0; }
-.carousel-track { display: flex; width: max-content; animation: scroll 45s linear infinite; }
-.slide { width: 280px; height: 350px; padding: 0 12px; flex-shrink: 0; }
+.carousel-track {
+    display: flex;
+    width: max-content;
+    animation: scroll 50s linear infinite;
+    will-change: transform; /* Otimização de GPU */
+    transform: translateZ(0); /* Força aceleração de hardware */
+}
+.slide { width: 260px; height: 340px; padding: 0 12px; flex-shrink: 0; }
 .slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
 
 @keyframes scroll {
     0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-280px * 16)); }
+    100% { transform: translateX(calc(-260px * 16)); }
 }
 
-/* STEPS */
-.steps { padding: 80px 0; background: #08080c; }
-.section-title { text-align: center; margin-bottom: 60px; font-size: 2.5rem; }
-.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-.step-card { background: var(--card); padding: 40px; border-radius: 24px; position: relative; border: 1px solid rgba(255,255,255,0.02); }
-.step-num { color: var(--accent); font-weight: 800; font-size: 1.2rem; display: block; margin-bottom: 15px; }
+/* MÉTODO */
+.steps { padding: 100px 0; background: #08080a; }
+.section-title { text-align: center; margin-bottom: 80px; font-size: 2.8rem; letter-spacing: -1px; }
+.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+.step-card { background: var(--card); padding: 50px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.02); transition: 0.3s; }
+.step-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+.step-num { color: var(--accent); font-weight: 900; font-size: 1.4rem; display: block; margin-bottom: 20px; }
+.step-card h3 { font-size: 1.6rem; margin-bottom: 15px; }
+.step-card p { color: var(--text-dim); line-height: 1.7; }
+
+/* VÍDEO TUTORIAL */
+.video-tutorial {
+    padding: 100px 0;
+    background: radial-gradient(circle at center, #0a0a0f 0%, #050508 100%);
+}
+
+.video-container-centered {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* Mantém a proporção 16:9 */
+    height: 0;
+    width: 100%;
+    max-width: 1000px; /* O tamanho grande que você pediu */
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(0, 242, 96, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
 /* PRODUCTIVITY */
 .productivity { padding: 80px 0; text-align: center; }
@@ -58,9 +100,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta San
 .feat h4 { color: var(--primary); margin-bottom: 10px; }
 .feat p { color: var(--text-dim); }
 
-.footer { padding: 60px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
+/* FOOTER */
+.footer { padding: 80px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
+.footer p { color: var(--text-dim); font-size: 1.1rem; }
 
 @media (max-width: 768px) {
-    .feature-row { grid-template-columns: 1fr; }
     .cta-group { flex-direction: column; }
+    .hero h1 { font-size: 3rem; }
+    .video-wrapper { max-width: 100%; border-radius: 16px; }
+    .feature-row { grid-template-columns: 1fr; }
 }
