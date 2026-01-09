@@ -4,354 +4,361 @@
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1a1a2e">
+
+<!-- ✅ ORDEM CORRETA: auth.js ANTES de verificar -->
 <script src="auth.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromptForge - Gerador de Prompts para Estampas</title>
+<link rel="stylesheet" href="styles.css">
+
+<!-- ✅ Service Worker (NÃO BLOQUEIA) -->
 <script>
-    // Registrar Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js');
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+            console.warn('Service Worker falhou:', err);
+        });
     }
-    
-    // Verificar autenticação SEMPRE
-    document.addEventListener('DOMContentLoaded', async function() {
-        const usuario = await verificarAutenticacao();
-        if (!usuario) {
-            // Já foi redirecionado pela função
-            return;
-        }
-        // Usuário válido, continua carregando o app
-        console.log('✅ Usuário autenticado:', usuario.nome);
-    });
 </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PromptForge - Gerador de Prompts para Estampas</title>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- NOVA BARRA DE NAVEGAÇÃO -->
     <div class="top-bar">
-    <div class="top-bar-inner">
-        <nav class="app-nav">
-    <a href="app.html" class="nav-item active">🎨 Estampas</a>
-    <a href="mockup.html" class="nav-item">👕 Mockups</a>
-    <a href="copy.html" class="nav-item">✍️ Copy</a>
-</nav>
-        <div class="user-area">
-            <span class="user-greeting" id="userGreeting">Olá, Usuário</span>
-            <button class="btn-logout" id="btnLogout" title="Sair">🚪 Sair</button>
-        </div>
-    </div>
-</div>
-
-    <!-- RESTO DO SEU CÓDIGO EXISTENTE -->
-        
-        <!-- HEADER -->
-<header class="header">
-    <div class="header-top">
-        <button class="theme-toggle" id="themeToggle" title="Alternar tema">
-            <span class="icon-dark">🌙</span>
-            <span class="icon-light">☀️</span>
-        </button>
-        
-        
-    <div class="logo-container">
-        <div class="logo-icon">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#00f260"/>
-                        <stop offset="50%" style="stop-color:#0575e6"/>
-                        <stop offset="100%" style="stop-color:#f857a6"/>
-                    </linearGradient>
-                    <linearGradient id="boltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#ffffff"/>
-                        <stop offset="100%" style="stop-color:#e0e0e0"/>
-                    </linearGradient>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                        <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                </defs>
-                <circle cx="50" cy="50" r="48" fill="url(#bgGradient)" opacity="0.9"/>
-                <circle cx="50" cy="50" r="40" fill="#1a1a2e" opacity="0.8"/>
-                <path d="M55 15 L35 45 L48 45 L43 85 L65 50 L52 50 L55 15Z" fill="url(#boltGradient)" filter="url(#glow)"/>
-                <circle cx="25" cy="30" r="3" fill="#00f260" opacity="0.8"/>
-                <circle cx="75" cy="70" r="3" fill="#f857a6" opacity="0.8"/>
-                <circle cx="78" cy="35" r="2" fill="#0575e6" opacity="0.6"/>
-                <circle cx="22" cy="65" r="2" fill="#00f260" opacity="0.6"/>
-                <circle cx="50" cy="50" r="48" fill="none" stroke="url(#bgGradient)" stroke-width="2" opacity="0.5"/>
-            </svg>
-        </div>
-        <div class="logo-text">
-            <span class="logo-title">PromptForge</span>
-            <span class="logo-tagline">Forjando Prompts Perfeitos</span>
+        <div class="top-bar-inner">
+            <nav class="app-nav">
+                <a href="app.html" class="nav-item active">🎨 Estampas</a>
+                <a href="mockup.html" class="nav-item">👕 Mockups</a>
+                <a href="copy.html" class="nav-item">✍️ Copy</a>
+            </nav>
+            <div class="user-area">
+                <span class="user-greeting" id="userGreeting">Olá, Usuário</span>
+                <button class="btn-logout" id="btnLogout" title="Sair">🚪 Sair</button>
+            </div>
         </div>
     </div>
 
-    <p class="description">Gerador de Prompts Profissionais para Estampas de Camisetas</p>
-    
-    <div class="stats-bar">
-        <div class="stat-item">
-            <div class="stat-number">27</div>
-            <div class="stat-label">Nichos</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">12</div>
-            <div class="stat-label">Estilos</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">7</div>
-            <div class="stat-label">Paletas</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">3</div>
-            <div class="stat-label">IAs</div>
-        </div>
-    </div>
-
-    <!-- Quick Actions Header -->
-    <div class="header-actions">
-        <button class="header-btn" id="btnHistorico" title="Histórico">
-            📜 Histórico
-        </button>
-        <button class="header-btn" id="btnFavoritos" title="Favoritos">
-            ⭐ Favoritos
-        </button>
-    </div>
-</header>
-
-        <!-- FORM SECTION -->
-        <section class="form-section">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-top">
+            <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+                <span class="icon-dark">🌙</span>
+                <span class="icon-light">☀️</span>
+            </button>
             
-            <!-- 1. NICHO -->
-            <div class="form-group">
-                <label>1. Escolha o Nicho</label>
-                <p class="subtitle">Selecione a categoria principal da sua estampa</p>
-                <div class="nicho-grid" id="nichoGrid">
-                    <!-- Renderizado via JS -->
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00f260"/>
+                                <stop offset="50%" style="stop-color:#0575e6"/>
+                                <stop offset="100%" style="stop-color:#f857a6"/>
+                            </linearGradient>
+                            <linearGradient id="boltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ffffff"/>
+                                <stop offset="100%" style="stop-color:#e0e0e0"/>
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="50" cy="50" r="48" fill="url(#bgGradient)" opacity="0.9"/>
+                        <circle cx="50" cy="50" r="40" fill="#1a1a2e" opacity="0.8"/>
+                        <path d="M55 15 L35 45 L48 45 L43 85 L65 50 L52 50 L55 15Z" fill="url(#boltGradient)" filter="url(#glow)"/>
+                        <circle cx="25" cy="30" r="3" fill="#00f260" opacity="0.8"/>
+                        <circle cx="75" cy="70" r="3" fill="#f857a6" opacity="0.8"/>
+                        <circle cx="78" cy="35" r="2" fill="#0575e6" opacity="0.6"/>
+                        <circle cx="22" cy="65" r="2" fill="#00f260" opacity="0.6"/>
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="url(#bgGradient)" stroke-width="2" opacity="0.5"/>
+                    </svg>
                 </div>
-                <div class="dica-nicho" id="dicaNicho">
-                    <!-- Dica aparece aqui quando seleciona nicho -->
-                </div>
-            </div>
-
-            <!-- 2. ESTILO -->
-            <div class="form-group">
-                <label for="styleSelect">2. Escolha o Estilo Visual</label>
-                <select id="styleSelect">
-                    <option value="">Selecione um estilo...</option>
-                    <!-- Renderizado via JS -->
-                </select>
-            </div>
-
-            <!-- 3. PALETA -->
-            <div class="form-group">
-                <label>3. Paleta de Cores</label>
-                <p class="subtitle">Escolha o clima cromático da estampa</p>
-                <div class="paleta-grid" id="paletaGrid">
-                    <!-- Renderizado via JS -->
-                </div>
-            </div>
-
-            <!-- 4. IDEIA -->
-            <div class="form-group">
-                <label for="themeInput">4. Descreva sua Ideia</label>
-                <p class="subtitle">Seja específico: personagens, ações, cenários, frases...</p>
-                <textarea id="themeInput" placeholder="Ex: Jogador de tênis fazendo um saque potente com explosão de energia"></textarea>
-                
-                <div class="idea-actions">
-                    <button class="btn-idea" id="btnGerarIdeia">
-                        🎲 Gerar Ideia Aleatória
-                    </button>
-                    <button class="btn-idea" id="btnOutraIdeia" disabled>
-                        🔄 Outra Ideia
-                    </button>
-                </div>
-
-                <div class="categoria-filter" id="categoriaFilter">
-                    <span class="filter-label">Filtrar por:</span>
-                    <div class="categoria-pills" id="categoriaPills">
-                        <!-- Renderizado via JS -->
-                    </div>
+                <div class="logo-text">
+                    <span class="logo-title">PromptForge</span>
+                    <span class="logo-tagline">Forjando Prompts Perfeitos</span>
                 </div>
             </div>
 
-            <!-- 5. IMAGEM REFERÊNCIA -->
-            <div class="form-group">
-                <label for="imageRef">5. Imagem de Referência <span class="optional">(opcional)</span></label>
-                <p class="subtitle">Cole a URL de uma imagem para usar como referência de estilo</p>
-                <input type="url" id="imageRef" placeholder="https://exemplo.com/imagem.jpg">
-                
-                <div class="image-preview-container" id="imagePreviewContainer">
-                    <div class="image-preview" id="imagePreview">
-                        <!-- Preview aparece aqui -->
-                    </div>
-                    <div class="image-info">
-                        <span class="image-status" id="imageStatus"></span>
-                        <button class="btn-remove-image" id="btnRemoveImage">❌ Remover</button>
-                    </div>
+            <p class="description">Gerador de Prompts Profissionais para Estampas de Camisetas</p>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-number">27</div>
+                    <div class="stat-label">Nichos</div>
                 </div>
-
-                <div class="image-note">
-                    <strong>💡 Como usar no Gemini:</strong> Salve a imagem e faça upload junto com o prompt gerado.
-                    <br><small>Midjourney aceita URL direta. Leonardo requer upload.</small>
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Estilos</div>
                 </div>
-            </div>
-
-            <!-- MIDJOURNEY ADVANCED (toggle) -->
-            <div class="form-group advanced-section" id="advancedSection">
-                <div class="advanced-toggle">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="advancedMode">
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span>Modo Avançado (Midjourney)</span>
+                <div class="stat-item">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Paletas</div>
                 </div>
-
-                <div class="advanced-options" id="advancedOptions">
-                    <div class="advanced-row">
-                        <div class="advanced-field">
-                            <label>Aspect Ratio</label>
-                            <select id="mjAspect">
-                                <option value="1:1" selected>1:1 (Quadrado)</option>
-                                <option value="4:5">4:5 (Retrato)</option>
-                                <option value="5:4">5:4 (Paisagem)</option>
-                                <option value="2:3">2:3 (Vertical)</option>
-                                <option value="3:2">3:2 (Horizontal)</option>
-                            </select>
-                        </div>
-                        <div class="advanced-field">
-                            <label>Versão</label>
-                            <select id="mjVersion">
-                                <option value="6.1" selected>v6.1 (Mais recente)</option>
-                                <option value="6">v6</option>
-                                <option value="5.2">v5.2</option>
-                            </select>
-                        </div>
-                        <div class="advanced-field">
-                            <label>Estilo</label>
-                            <select id="mjStyle">
-                                <option value="raw" selected>Raw (Menos filtro)</option>
-                                <option value="cute">Cute</option>
-                                <option value="scenic">Scenic</option>
-                                <option value="expressive">Expressive</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">IAs</div>
                 </div>
             </div>
 
-            <!-- BUTTONS -->
-            <div class="buttons">
-                <button class="btn btn-primary" id="btnGerar">
-                    ⚡ Gerar Prompts
+            <!-- Quick Actions Header -->
+            <div class="header-actions">
+                <button class="header-btn" id="btnHistorico" title="Histórico">
+                    📜 Histórico
                 </button>
-                <button class="btn btn-random" id="btnSurpresa">
-                    🎲 Surpresa Total!
+                <button class="header-btn" id="btnFavoritos" title="Favoritos">
+                    ⭐ Favoritos
                 </button>
             </div>
-        </section>
+        </div>
+    </header>
 
-        <!-- RESULT SECTION -->
-        <section class="result-section" id="resultSection">
-            <div class="result-header">
-                <h2>📋 Prompts Gerados</h2>
-                <div class="badges" id="resultBadges">
-                    <!-- Badges renderizados via JS -->
+    <!-- FORM SECTION -->
+    <section class="form-section">
+        
+        <!-- 1. NICHO -->
+        <div class="form-group">
+            <label>1. Escolha o Nicho</label>
+            <p class="subtitle">Selecione a categoria principal da sua estampa</p>
+            <div class="nicho-grid" id="nichoGrid"></div>
+            <div class="dica-nicho" id="dicaNicho"></div>
+        </div>
+
+        <!-- 2. ESTILO -->
+        <div class="form-group">
+            <label for="styleSelect">2. Escolha o Estilo Visual</label>
+            <select id="styleSelect">
+                <option value="">Selecione um estilo...</option>
+            </select>
+        </div>
+
+        <!-- 3. PALETA -->
+        <div class="form-group">
+            <label>3. Paleta de Cores</label>
+            <p class="subtitle">Escolha o clima cromático da estampa</p>
+            <div class="paleta-grid" id="paletaGrid"></div>
+        </div>
+
+        <!-- 4. IDEIA -->
+        <div class="form-group">
+            <label for="themeInput">4. Descreva sua Ideia</label>
+            <p class="subtitle">Seja específico: personagens, ações, cenários, frases...</p>
+            <textarea id="themeInput" placeholder="Ex: Jogador de tênis fazendo um saque potente com explosão de energia"></textarea>
+            
+            <div class="idea-actions">
+                <button class="btn-idea" id="btnGerarIdeia">
+                    🎲 Gerar Ideia Aleatória
+                </button>
+                <button class="btn-idea" id="btnOutraIdeia" disabled>
+                    🔄 Outra Ideia
+                </button>
+            </div>
+
+            <div class="categoria-filter" id="categoriaFilter">
+                <span class="filter-label">Filtrar por:</span>
+                <div class="categoria-pills" id="categoriaPills"></div>
+            </div>
+        </div>
+
+        <!-- 5. IMAGEM REFERÊNCIA -->
+        <div class="form-group">
+            <label for="imageRef">5. Imagem de Referência <span class="optional">(opcional)</span></label>
+            <p class="subtitle">Cole a URL de uma imagem para usar como referência de estilo</p>
+            <input type="url" id="imageRef" placeholder="https://exemplo.com/imagem.jpg">
+            
+            <div class="image-preview-container" id="imagePreviewContainer">
+                <div class="image-preview" id="imagePreview"></div>
+                <div class="image-info">
+                    <span class="image-status" id="imageStatus"></span>
+                    <button class="btn-remove-image" id="btnRemoveImage">❌ Remover</button>
                 </div>
             </div>
 
-            <!-- AI Recommendation -->
-            <div class="ai-recommendation" id="aiRecommendation">
-                <!-- Recomendação renderizada via JS -->
+            <div class="image-note">
+                <strong>💡 Como usar no Gemini:</strong> Salve a imagem e faça upload junto com o prompt gerado.
+                <br><small>Midjourney aceita URL direta. Leonardo requer upload.</small>
+            </div>
+        </div>
+
+        <!-- MIDJOURNEY ADVANCED (toggle) -->
+        <div class="form-group advanced-section" id="advancedSection">
+            <div class="advanced-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="advancedMode">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span>Modo Avançado (Midjourney)</span>
             </div>
 
-            <!-- PROMPT BOXES -->
-            <div class="prompt-cards">
-                
-                <!-- Leonardo.ai -->
-                <div class="prompt-card" data-ai="leonardo">
-                    <div class="prompt-card-header">
-                        <div class="prompt-card-title">
-                            <span class="ai-icon">🎨</span>
-                            <span>Leonardo.ai</span>
-                        </div>
+            <div class="advanced-options" id="advancedOptions">
+                <div class="advanced-row">
+                    <div class="advanced-field">
+                        <label>Aspect Ratio</label>
+                        <select id="mjAspect">
+                            <option value="1:1" selected>1:1 (Quadrado)</option>
+                            <option value="4:5">4:5 (Retrato)</option>
+                            <option value="5:4">5:4 (Paisagem)</option>
+                            <option value="2:3">2:3 (Vertical)</option>
+                            <option value="3:2">3:2 (Horizontal)</option>
+                        </select>
+                    </div>
+                    <div class="advanced-field">
+                        <label>Versão</label>
+                        <select id="mjVersion">
+                            <option value="6.1" selected>v6.1 (Mais recente)</option>
+                            <option value="6">v6</option>
+                            <option value="5.2">v5.2</option>
+                        </select>
+                    </div>
+                    <div class="advanced-field">
+                        <label>Estilo</label>
+                        <select id="mjStyle">
+                            <option value="raw" selected>Raw (Menos filtro)</option>
+                            <option value="cute">Cute</option>
+                            <option value="scenic">Scenic</option>
+                            <option value="expressive">Expressive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="buttons">
+            <button class="btn btn-primary" id="btnGerar">
+                ⚡ Gerar Prompts
+            </button>
+            <button class="btn btn-random" id="btnSurpresa">
+                🎲 Surpresa Total!
+            </button>
+        </div>
+    </section>
+
+    <!-- RESULT SECTION -->
+    <section class="result-section" id="resultSection">
+        <div class="result-header">
+            <h2>📋 Prompts Gerados</h2>
+            <div class="badges" id="resultBadges"></div>
+        </div>
+
+        <!-- AI Recommendation -->
+        <div class="ai-recommendation" id="aiRecommendation"></div>
+
+        <!-- PROMPT BOXES -->
+        <div class="prompt-cards">
+            
+            <!-- Leonardo.ai -->
+            <div class="prompt-card" data-ai="leonardo">
+                <div class="prompt-card-header">
+                    <div class="prompt-card-title">
+                        <span class="ai-icon">🎨</span>
+                        <span>Leonardo.ai</span>
+                    </div>
+                    <div class="prompt-card-actions">
                         <button class="btn-copy" data-target="promptLeonardo">📋 Copiar</button>
+                        <button class="btn-feedback" data-ai="leonardo" data-action="up">👍</button>
+                        <button class="btn-feedback" data-ai="leonardo" data-action="down">👎</button>
                     </div>
-                    <div class="prompt-box" id="promptLeonardo"></div>
-                    <div class="prompt-tip" id="tipLeonardo"></div>
                 </div>
+                <div class="prompt-box" id="promptLeonardo"></div>
+                <div class="prompt-tip" id="tipLeonardo"></div>
+            </div>
 
-                <!-- Midjourney -->
-                <div class="prompt-card" data-ai="midjourney">
-                    <div class="prompt-card-header">
-                        <div class="prompt-card-title">
-                            <span class="ai-icon">🎭</span>
-                            <span>Midjourney</span>
-                        </div>
+            <!-- Midjourney -->
+            <div class="prompt-card" data-ai="midjourney">
+                <div class="prompt-card-header">
+                    <div class="prompt-card-title">
+                        <span class="ai-icon">🎭</span>
+                        <span>Midjourney</span>
+                    </div>
+                    <div class="prompt-card-actions">
                         <button class="btn-copy" data-target="promptMidjourney">📋 Copiar</button>
+                        <button class="btn-feedback" data-ai="midjourney" data-action="up">👍</button>
+                        <button class="btn-feedback" data-ai="midjourney" data-action="down">👎</button>
                     </div>
-                    <div class="prompt-box" id="promptMidjourney"></div>
-                    <div class="prompt-tip" id="tipMidjourney"></div>
                 </div>
-
-               <!-- Gemini -->
-<div class="prompt-card" data-ai="gemini">
-    <div class="prompt-card-header">
-        <div class="prompt-card-title">
-            <span class="ai-icon">🍌</span>
-            <span>Gemini</span>
-        </div>
-        <div class="prompt-card-actions">
-            <button class="btn-copy" data-target="promptGemini">📋 Copiar</button>
-            <button class="btn-open-ai" id="btnAbrirGemini">🚀 Abrir no Gemini</button>
-        </div>
-    </div>
-    <div class="prompt-box" id="promptGemini"></div>
-    <div class="prompt-tip" id="tipGemini"></div>
-</div>
-
+                <div class="prompt-box" id="promptMidjourney"></div>
+                <div class="prompt-tip" id="tipMidjourney"></div>
             </div>
 
-            <!-- Result Actions -->
-            <div class="result-actions">
-    <button class="btn-action" id="btnCopiarTodos">
-        📋 Copiar Todos
-    </button>
-    <button class="btn-action" id="btnFavoritar">
-        ⭐ Favoritar
-    </button>
-    <button class="btn-action" id="btnExportar">
-        📤 Exportar
-    </button>
-    <button class="btn-action" id="btnNegative">
-        🚫 Negative Prompt
-    </button>
-    <!-- NOVO: Botão Como Usar -->
-    <button class="btn-action btn-help" id="btnComoUsar">
-        📖 Como Usar
-    </button>
-</div>
-
-            <!-- Info Box -->
-            <div class="info-box" id="infoBox">
-                <!-- Info renderizada via JS -->
+           <!-- Gemini -->
+            <div class="prompt-card" data-ai="gemini">
+                <div class="prompt-card-header">
+                    <div class="prompt-card-title">
+                        <span class="ai-icon">🌐</span>
+                        <span>Gemini</span>
+                    </div>
+                    <div class="prompt-card-actions">
+                        <button class="btn-copy" data-target="promptGemini">📋 Copiar</button>
+                        <button class="btn-open-ai" id="btnAbrirGemini">🚀 Abrir no Gemini</button>
+                        <button class="btn-feedback" data-ai="gemini" data-action="up">👍</button>
+                        <button class="btn-feedback" data-ai="gemini" data-action="down">👎</button>
+                    </div>
+                </div>
+                <div class="prompt-box" id="promptGemini"></div>
+                <div class="prompt-tip" id="tipGemini"></div>
             </div>
-        </section>
 
-        <!-- FOOTER -->
-        <footer>
-            <p>PromptForge - Crie estampas incríveis com IA</p>
-            <p class="footer-sub">Otimizado para Leonardo.ai, Midjourney e Gemini</p>
-        </footer>
+        </div>
+
+        <!-- Result Actions -->
+        <div class="result-actions">
+            <button class="btn-action" id="btnCopiarTodos">📋 Copiar Todos</button>
+            <button class="btn-action" id="btnFavoritar">⭐ Favoritar</button>
+            <button class="btn-action" id="btnExportar">📤 Exportar</button>
+            <button class="btn-action" id="btnNegative">🚫 Negative Prompt</button>
+            <button class="btn-action btn-help" id="btnComoUsar">📖 Como Usar</button>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box" id="infoBox"></div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>PromptForge - Crie estampas incríveis com IA</p>
+        <p class="footer-sub">Otimizado para Leonardo.ai, Midjourney e Gemini</p>
+    </footer>
+
+    <!-- ==================== MODAIS ==================== -->
+
+    <!-- Modal: Histórico -->
+    <div class="modal" id="modalHistorico">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📜 Histórico de Prompts</h3>
+                <button class="modal-close" data-modal="modalHistorico">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="historico-list" id="historicoList">
+                    <p class="empty-state">Nenhum prompt gerado ainda.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btnLimparHistorico">🗑️ Limpar Histórico</button>
+            </div>
+        </div>
     </div>
 
-    <!-- MODAIS -->
+    <!-- Modal: Favoritos -->
+    <div class="modal" id="modalFavoritos">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⭐ Prompts Favoritos</h3>
+                <button class="modal-close" data-modal="modalFavoritos">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="favoritos-list" id="favoritosList">
+                    <p class="empty-state" id="favoritosEmpty">Nenhum favorito salvo ainda.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Modal Profissões -->
+    <!-- Modal: Profissões -->
     <div class="modal" id="modalProfissoes">
         <div class="modal-content">
             <div class="modal-header">
@@ -359,14 +366,12 @@
                 <button class="modal-close" data-modal="modalProfissoes">✕</button>
             </div>
             <div class="modal-body">
-                <div class="submenu-grid" id="profissoesGrid">
-                    <!-- Renderizado via JS -->
-                </div>
+                <div class="submenu-grid" id="profissoesGrid"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Signos -->
+    <!-- Modal: Signos -->
     <div class="modal" id="modalSignos">
         <div class="modal-content">
             <div class="modal-header">
@@ -374,55 +379,12 @@
                 <button class="modal-close" data-modal="modalSignos">✕</button>
             </div>
             <div class="modal-body">
-                <div class="submenu-grid" id="signosGrid">
-                    <!-- Renderizado via JS -->
-                </div>
+                <div class="submenu-grid" id="signosGrid"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Histórico -->
-    <div class="modal" id="modalHistorico">
-        <div class="modal-content modal-large">
-            <div class="modal-header">
-                <h3>📜 Histórico de Prompts</h3>
-                <button class="modal-close" data-modal="modalHistorico">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="historico-list" id="historicoList">
-                    <!-- Renderizado via JS -->
-                </div>
-                <div class="historico-empty" id="historicoEmpty">
-                    <p>Nenhum prompt gerado ainda.</p>
-                    <p>Seus prompts aparecerão aqui! 🚀</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-modal-action" id="btnLimparHistorico">🗑️ Limpar Histórico</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Favoritos -->
-    <div class="modal" id="modalFavoritos">
-        <div class="modal-content modal-large">
-            <div class="modal-header">
-                <h3>⭐ Favoritos</h3>
-                <button class="modal-close" data-modal="modalFavoritos">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="favoritos-list" id="favoritosList">
-                    <!-- Renderizado via JS -->
-                </div>
-                <div class="favoritos-empty" id="favoritosEmpty">
-                    <p>Nenhum favorito salvo.</p>
-                    <p>Clique em ⭐ para salvar seus melhores prompts!</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Exportar -->
+    <!-- Modal: Exportar -->
     <div class="modal" id="modalExportar">
         <div class="modal-content">
             <div class="modal-header">
@@ -430,22 +392,31 @@
                 <button class="modal-close" data-modal="modalExportar">✕</button>
             </div>
             <div class="modal-body">
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Escolha como deseja exportar seus prompts:
+                </p>
                 <div class="export-options">
                     <button class="export-btn" id="exportTxt">
-                        📄 Salvar como .TXT
+                        <span class="export-icon">📄</span>
+                        <span class="export-label">Arquivo TXT</span>
+                        <span class="export-desc">Baixar como arquivo de texto</span>
                     </button>
                     <button class="export-btn" id="exportCopy">
-                        📋 Copiar Formatado
+                        <span class="export-icon">📋</span>
+                        <span class="export-label">Copiar Tudo</span>
+                        <span class="export-desc">Copiar todos os prompts formatados</span>
                     </button>
                     <button class="export-btn" id="exportWhatsapp">
-                        💬 Compartilhar WhatsApp
+                        <span class="export-icon">💬</span>
+                        <span class="export-label">WhatsApp</span>
+                        <span class="export-desc">Compartilhar via WhatsApp</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Negative Prompt -->
+    <!-- Modal: Negative Prompt -->
     <div class="modal" id="modalNegative">
         <div class="modal-content">
             <div class="modal-header">
@@ -453,469 +424,210 @@
                 <button class="modal-close" data-modal="modalNegative">✕</button>
             </div>
             <div class="modal-body">
-                <p class="negative-info">Use este negative prompt para evitar elementos indesejados:</p>
-                <div class="prompt-box negative-box" id="negativePromptBox">
-                    <!-- Renderizado via JS -->
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    Use este negative prompt para evitar elementos indesejados nas suas imagens:
+                </p>
+                <div class="negative-prompt-box" id="negativePromptBox">
+                    blurry, low quality, distorted, deformed, ugly, bad anatomy, watermark, signature, text overlay, logo, mockup, t-shirt, clothing, fabric texture, wrinkles, person wearing shirt, model, photorealistic photograph of person wearing, bad proportions, extra limbs, mutated, disfigured, out of frame, cropped, amateur, jpeg artifacts
                 </div>
-                <button class="btn btn-primary" id="btnCopyNegative" style="margin-top: 15px; width: 100%;">
-                    📋 Copiar Negative Prompt
-                </button>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 15px;">
+                    💡 <strong>Dica:</strong> Cole este texto no campo "Negative Prompt" do Leonardo.ai ou adicione <code>--no</code> seguido dos termos no Midjourney.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnCopyNegative">📋 Copiar Negative Prompt</button>
             </div>
         </div>
     </div>
+
+    <!-- Modal: Como Usar -->
+    <div class="modal" id="modalComoUsar">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>📖 Como Usar o PromptForge</h3>
+                <button class="modal-close" data-modal="modalComoUsar">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <div class="tutorial-tabs">
+                    <button class="tutorial-tab active" data-tab="leonardo">🎨 Leonardo.ai</button>
+                    <button class="tutorial-tab" data-tab="midjourney">🎭 Midjourney</button>
+                    <button class="tutorial-tab" data-tab="gemini">🌐 Gemini</button>
+                    <button class="tutorial-tab" data-tab="dicas">💡 Dicas</button>
+                </div>
+                
+                <!-- Conteúdo Leonardo -->
+                <div class="tutorial-content active" id="tab-leonardo">
+                    <h4>Como usar no Leonardo.ai</h4>
+                    <ol class="tutorial-steps">
+                        <li>
+                            <strong>Acesse</strong> <a href="https://leonardo.ai" target="_blank">leonardo.ai</a> e faça login
+                        </li>
+                        <li>
+                            <strong>Clique em "Create"</strong> no menu lateral
+                        </li>
+                        <li>
+                            <strong>Escolha o modelo</strong> recomendado na dica do prompt (ex: Leonardo Diffusion XL)
+                        </li>
+                        <li>
+                            <strong>Cole o prompt</strong> no campo de texto
+                        </li>
+                        <li>
+                            <strong>Cole o Negative Prompt</strong> no campo apropriado
+                        </li>
+                        <li>
+                            <strong>Configure:</strong>
+                            <ul>
+                                <li>Dimensões: 1024x1024 (quadrado)</li>
+                                <li>Guidance Scale: 7-9</li>
+                                <li>Número de imagens: 4</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Clique em "Generate"</strong> e aguarde!
+                        </li>
+                    </ol>
+                </div>
+                
+                <!-- Conteúdo Midjourney -->
+                <div class="tutorial-content" id="tab-midjourney">
+                    <h4>Como usar no Midjourney</h4>
+                    <ol class="tutorial-steps">
+                        <li>
+                            <strong>Acesse</strong> o <a href="https://discord.gg/midjourney" target="_blank">Discord do Midjourney</a>
+                        </li>
+                        <li>
+                            <strong>Vá para um canal</strong> de geração (ex: #newbies)
+                        </li>
+                        <li>
+                            <strong>Digite</strong> <code>/imagine</code> e pressione Tab
+                        </li>
+                        <li>
+                            <strong>Cole o prompt</strong> no campo que aparece
+                        </li>
+                        <li>
+                            <strong>Pressione Enter</strong> e aguarde
+                        </li>
+                        <li>
+                            <strong>Use os botões:</strong>
+                            <ul>
+                                <li>U1-U4: Upscale (aumentar qualidade)</li>
+                                <li>V1-V4: Variações</li>
+                                <li>🔄: Regenerar</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <div class="tutorial-tip">
+                        💡 O prompt já inclui os parâmetros --ar, --v e --style automaticamente!
+                    </div>
+                </div>
+                
+                <!-- Conteúdo Gemini -->
+                <div class="tutorial-content" id="tab-gemini">
+                    <h4>Como usar no Google Gemini</h4>
+                    <ol class="tutorial-steps">
+                        <li>
+                            <strong>Clique no botão</strong> "🚀 Abrir no Gemini"
+                        </li>
+                        <li>
+                            <strong>O prompt será copiado</strong> automaticamente
+                        </li>
+                        <li>
+                            <strong>Cole com Ctrl+V</strong> na caixa de texto do Gemini
+                        </li>
+                        <li>
+                            <strong>Se tiver imagem de referência</strong>, faça upload antes de enviar
+                        </li>
+                        <li>
+                            <strong>Pressione Enter</strong> ou clique em enviar
+                        </li>
+                        <li>
+                            <strong>Aguarde</strong> a geração da imagem
+                        </li>
+                    </ol>
+                    <div class="tutorial-tip">
+                        💡 O Gemini entende português! O prompt já está otimizado para ele.
+                    </div>
+                </div>
+                
+                <!-- Conteúdo Dicas -->
+                <div class="tutorial-content" id="tab-dicas">
+                    <h4>Dicas para Melhores Resultados</h4>
+                    <div class="tips-grid">
+                        <div class="tip-card">
+                            <span class="tip-icon">🎯</span>
+                            <h5>Seja Específico</h5>
+                            <p>Quanto mais detalhes na descrição, melhor o resultado. Descreva poses, expressões, cenários.</p>
+                        </div>
+                        <div class="tip-card">
+                            <span class="tip-icon">🔄</span>
+                            <h5>Gere Variações</h5>
+                            <p>Gere 4+ imagens por prompt e escolha a melhor. A IA é probabilística!</p>
+                        </div>
+                        <div class="tip-card">
+                            <span class="tip-icon">🎨</span>
+                            <h5>Experimente Estilos</h5>
+                            <p>Cada estilo funciona melhor para certos temas. Teste diferentes combinações.</p>
+                        </div>
+                        <div class="tip-card">
+                            <span class="tip-icon">🚫</span>
+                            <h5>Use Negative Prompt</h5>
+                            <p>Sempre use o negative prompt para evitar mockups e pessoas vestindo a camiseta.</p>
+                        </div>
+                        <div class="tip-card">
+                            <span class="tip-icon">📐</span>
+                            <h5>Formato Quadrado</h5>
+                            <p>Para estampas, prefira 1:1 (quadrado). Facilita o posicionamento na camiseta.</p>
+                        </div>
+                        <div class="tip-card">
+                            <span class="tip-icon">⭐</span>
+                            <h5>Salve os Melhores</h5>
+                            <p>Use o botão Favoritar para guardar combinações que funcionam bem!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== FIM DOS MODAIS ==================== -->
 
     <!-- TOAST -->
     <div class="toast" id="toast">
         <span id="toastMessage">Copiado!</span>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- ✅ SCRIPTS NA ORDEM CORRETA -->
     <script src="data.js"></script>
     <script src="app.js"></script>
 
-<!-- Modal Como Usar -->
-<div class="modal" id="modalComoUsar">
-    <div class="modal-content modal-large">
-        <div class="modal-header">
-            <h3>📖 Como Usar os Prompts</h3>
-            <button class="modal-close" data-modal="modalComoUsar">✕</button>
-        </div>
-        <div class="modal-body">
-            <!-- Tabs de navegação -->
-            <div class="tutorial-tabs">
-                <button class="tutorial-tab active" data-tab="leonardo">🎨 Leonardo.ai</button>
-                <button class="tutorial-tab" data-tab="midjourney">🎭 Midjourney</button>
-                <button class="tutorial-tab" data-tab="gemini">🍌 Gemini</button>
-                <button class="tutorial-tab" data-tab="preparar">✂️ Preparar Estampa</button>
-            </div>
-
-            <!-- Conteúdo Leonardo -->
-            <div class="tutorial-content active" id="tab-leonardo">
-                <h4>🎨 Passo a Passo - Leonardo.ai</h4>
+    <!-- ✅ VERIFICAÇÃO DE AUTENTICAÇÃO (SEM BLOQUEAR) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔐 Verificando autenticação...');
+            
+            // Verifica se está logado (não bloqueia!)
+            if (window.auth && window.auth.verificarAutenticacao) {
+                const logado = window.auth.verificarAutenticacao();
                 
-                <div class="tutorial-step">
-                    <span class="step-number">1</span>
-                    <div class="step-content">
-                        <strong>Acesse o Leonardo.ai</strong>
-                        <p>Vá para <a href="https://leonardo.ai" target="_blank">leonardo.ai</a> e faça login</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">2</span>
-                    <div class="step-content">
-                        <strong>Clique em "AI Image Generation"</strong>
-                        <p>No menu lateral, selecione a opção de geração de imagens</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">3</span>
-                    <div class="step-content">
-                        <strong>Cole o prompt</strong>
-                        <p>Copie o prompt gerado e cole no campo de texto</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert warning">
-                    <span class="alert-icon">⚠️</span>
-                    <div class="alert-content">
-                        <strong>IMPORTANTE: Escolha o modelo certo!</strong>
-                        <p>Use o modelo sugerido na dica abaixo do prompt (ex: Leonardo Diffusion XL, Anime Pastel Dream)</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">4</span>
-                    <div class="step-content">
-                        <strong>Configure as opções</strong>
-                        <p>Resolução: <code>1024x1024</code> ou <code>768x1024</code></p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">5</span>
-                    <div class="step-content">
-                        <strong>Adicione o Negative Prompt</strong>
-                        <p>Clique em "Negative Prompt" e cole o texto do botão 🚫</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert success">
-                    <span class="alert-icon">💡</span>
-                    <div class="alert-content">
-                        <strong>DICA PRO</strong>
-                        <p>Gere 4 variações de uma vez e escolha a melhor!</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">6</span>
-                    <div class="step-content">
-                        <strong>Clique em "Generate"</strong>
-                        <p>Aguarde a geração e baixe a imagem que mais gostar</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Conteúdo Midjourney -->
-            <div class="tutorial-content" id="tab-midjourney">
-                <h4>🎭 Passo a Passo - Midjourney</h4>
+                if (!logado) {
+                    console.warn('❌ Usuário não autenticado, redirecionando...');
+                    setTimeout(() => {
+                        window.location.href = '/index.html';
+                    }, 100);
+                    return;
+                }
                 
-                <div class="tutorial-step">
-                    <span class="step-number">1</span>
-                    <div class="step-content">
-                        <strong>Acesse o Discord do Midjourney</strong>
-                        <p>Entre no servidor oficial ou use em servidor próprio com o bot</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">2</span>
-                    <div class="step-content">
-                        <strong>Digite /imagine</strong>
-                        <p>No canal de geração, digite <code>/imagine</code> e aguarde aparecer o comando</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">3</span>
-                    <div class="step-content">
-                        <strong>Cole o prompt</strong>
-                        <p>No campo "prompt", cole o texto copiado do PromptForge</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert warning">
-                    <span class="alert-icon">⚠️</span>
-                    <div class="alert-content">
-                        <strong>NÃO MODIFIQUE OS PARÂMETROS!</strong>
-                        <p>O prompt já vem com <code>--ar</code>, <code>--v</code> e <code>--style</code> configurados. Não altere!</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">4</span>
-                    <div class="step-content">
-                        <strong>Pressione Enter</strong>
-                        <p>Aguarde ~60 segundos para a geração</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">5</span>
-                    <div class="step-content">
-                        <strong>Escolha a melhor variação</strong>
-                        <p>Clique em <code>U1</code>, <code>U2</code>, <code>U3</code> ou <code>U4</code> para fazer upscale</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert success">
-                    <span class="alert-icon">💡</span>
-                    <div class="alert-content">
-                        <strong>DICA PRO</strong>
-                        <p>Use <code>V1-V4</code> para gerar variações da imagem que mais gostou!</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">6</span>
-                    <div class="step-content">
-                        <strong>Baixe a imagem</strong>
-                        <p>Clique na imagem → "Abrir original" → Salvar</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Conteúdo Gemini -->
-            <div class="tutorial-content" id="tab-gemini">
-                <h4>🍌 Passo a Passo - Gemini (Google)</h4>
+                console.log('✅ Usuário autenticado!');
                 
-                <div class="tutorial-step">
-                    <span class="step-number">1</span>
-                    <div class="step-content">
-                        <strong>Acesse o Gemini</strong>
-                        <p>Vá para <a href="https://gemini.google.com" target="_blank">gemini.google.com</a></p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">2</span>
-                    <div class="step-content">
-                        <strong>Cole o prompt</strong>
-                        <p>Use o botão "🚀 Abrir no Gemini" que já copia automaticamente!</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert info">
-                    <span class="alert-icon">📱</span>
-                    <div class="alert-content">
-                        <strong>NO CELULAR</strong>
-                        <p>O prompt é copiado automaticamente. Só colar com Ctrl+V ou segurar e "Colar"</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">3</span>
-                    <div class="step-content">
-                        <strong>Envie e aguarde</strong>
-                        <p>O Gemini vai gerar a imagem diretamente na conversa</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert success">
-                    <span class="alert-icon">💡</span>
-                    <div class="alert-content">
-                        <strong>DICA PRO</strong>
-                        <p>Peça "gere mais 4 variações" se não gostar do resultado!</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">4</span>
-                    <div class="step-content">
-                        <strong>Baixe a imagem</strong>
-                        <p>Clique na imagem gerada → botão de download</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert warning">
-                    <span class="alert-icon">⚠️</span>
-                    <div class="alert-content">
-                        <strong>SE O GEMINI RECUSAR GERAR</strong>
-                        <p>Às vezes o Gemini recusa ou gera imagens com erros. Se isso acontecer, tente reformular ou use Leonardo/Midjourney</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert danger">
-                    <span class="alert-icon">🚨</span>
-                    <div class="alert-content">
-                        <strong>DEU ERRO NA ESTAMPA? FAÇA ISSO:</strong>
-                        <p>
-                            1. <strong>Inicie uma NOVA CONVERSA</strong> (clique em "Nova conversa" ou "+")<br>
-                            2. Cole o <strong>MESMO prompt</strong> novamente<br>
-                            3. O Gemini vai gerar um resultado completamente diferente!<br><br>
-                            <em>💡 Cada conversa nova = nova "semente" de geração = resultado diferente</em>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="tutorial-divider">
-                    <span>QUANDO USAR O GEMINI?</span>
-                </div>
-
-                <div class="tutorial-alert success">
-                    <span class="alert-icon">✅</span>
-                    <div class="alert-content">
-                        <strong>GEMINI É ÓTIMO PARA:</strong>
-                        <p>
-                            • Estilos de humor e memes brasileiros<br>
-                            • Quando precisa de texto em português na imagem<br>
-                            • Iterações rápidas (pedir ajustes na mesma conversa)<br>
-                            • Usuários sem assinatura de Leonardo/Midjourney
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Conteúdo Preparar Estampa -->
-            <div class="tutorial-content" id="tab-preparar">
-                <h4>✂️ Preparar Estampa para Impressão (Canva)</h4>
-                
-                <div class="tutorial-alert warning">
-                    <span class="alert-icon">🎯</span>
-                    <div class="alert-content">
-                        <strong>OBJETIVO</strong>
-                        <p>Remover o fundo da imagem e salvar em PNG transparente no formato A4 para usar no MockupForge</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-divider">
-                    <span>PARTE 1: Criar documento no Canva</span>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">1</span>
-                    <div class="step-content">
-                        <strong>Acesse o Canva</strong>
-                        <p>Vá para <a href="https://canva.com" target="_blank">canva.com</a> e faça login</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">2</span>
-                    <div class="step-content">
-                        <strong>Crie um design A4</strong>
-                        <p>Clique em <code>Criar um design</code> → <code>Documento A4</code> (21 x 29,7 cm)</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert info">
-                    <span class="alert-icon">📐</span>
-                    <div class="alert-content">
-                        <strong>POR QUE A4?</strong>
-                        <p>É o formato padrão para impressão DTF/DTG e funciona perfeitamente no MockupForge</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-divider">
-                    <span>PARTE 2: Importar e ajustar imagem</span>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">3</span>
-                    <div class="step-content">
-                        <strong>Faça upload da imagem gerada</strong>
-                        <p>Clique em <code>Uploads</code> → <code>Fazer upload de arquivos</code> → Selecione a imagem da IA</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">4</span>
-                    <div class="step-content">
-                        <strong>Arraste a imagem para o canvas</strong>
-                        <p>Posicione no centro e ajuste o tamanho conforme necessário</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert success">
-                    <span class="alert-icon">💡</span>
-                    <div class="alert-content">
-                        <strong>DICA DE TAMANHO</strong>
-                        <p>Para estampas de camiseta, a imagem geralmente ocupa 60-80% da largura do A4</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-divider">
-                    <span>PARTE 3: Remover fundo</span>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">5</span>
-                    <div class="step-content">
-                        <strong>Selecione a imagem</strong>
-                        <p>Clique na imagem para selecioná-la</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">6</span>
-                    <div class="step-content">
-                        <strong>Clique em "Editar imagem"</strong>
-                        <p>Na barra superior, clique em <code>Editar imagem</code></p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">7</span>
-                    <div class="step-content">
-                        <strong>Selecione "Remover fundo" (BG Remover)</strong>
-                        <p>Clique em <code>Remover fundo</code> e aguarde o processamento</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert warning">
-                    <span class="alert-icon">⚠️</span>
-                    <div class="alert-content">
-                        <strong>RECURSO PRO</strong>
-                        <p>O "Remover fundo" é um recurso do Canva Pro. Se não tiver, use o <a href="https://remove.bg" target="_blank">remove.bg</a> (grátis) antes de importar</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-divider">
-                    <span>PARTE 4: Exportar PNG transparente</span>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">8</span>
-                    <div class="step-content">
-                        <strong>Clique em "Compartilhar"</strong>
-                        <p>No canto superior direito, clique em <code>Compartilhar</code></p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">9</span>
-                    <div class="step-content">
-                        <strong>Selecione "Baixar"</strong>
-                        <p>Clique em <code>Baixar</code></p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">10</span>
-                    <div class="step-content">
-                        <strong>Configure o download</strong>
-                        <p>
-                            • Tipo de arquivo: <code>PNG</code><br>
-                            • ✅ Marque <code>Fundo transparente</code><br>
-                            • Tamanho: <code>1x</code> ou <code>2x</code> para mais qualidade
-                        </p>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert danger">
-                    <span class="alert-icon">🚨</span>
-                    <div class="alert-content">
-                        <strong>NÃO ESQUEÇA!</strong>
-                        <p>Marcar "Fundo transparente" é OBRIGATÓRIO! Sem isso, a estampa vai ter fundo branco</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <span class="step-number">11</span>
-                    <div class="step-content">
-                        <strong>Clique em "Baixar"</strong>
-                        <p>Pronto! Sua estampa está preparada para o MockupForge 🎉</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-divider">
-                    <span>RESUMO RÁPIDO</span>
-                </div>
-
-                <div class="tutorial-summary">
-                    <div class="summary-item">
-                        <span class="summary-icon">1️⃣</span>
-                        <span>Criar documento A4 no Canva</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-icon">2️⃣</span>
-                        <span>Upload da imagem gerada pela IA</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-icon">3️⃣</span>
-                        <span>Remover fundo (BG Remover ou remove.bg)</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-icon">4️⃣</span>
-                        <span>Exportar PNG com fundo transparente</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-icon">5️⃣</span>
-                        <span>Usar no MockupForge! 🚀</span>
-                    </div>
-                </div>
-
-                <div class="tutorial-alert danger">
-                    <span class="alert-icon">🚨</span>
-                    <div class="alert-content">
-                        <strong>IMAGEM COM ERRO OU DEFEITO?</strong>
-                        <p>
-                            Se a IA gerou uma imagem com problemas:<br><br>
-                            1. <strong>Volte para a IA</strong> (Gemini, Leonardo ou Midjourney)<br>
-                            2. <strong>Inicie uma NOVA CONVERSA</strong> (no Gemini) ou gere novamente<br>
-                            3. <strong>Cole o MESMO prompt</strong><br>
-                            4. Cada geração produz um resultado diferente!<br><br>
-                            <em>💡 Repita até conseguir uma estampa perfeita</em>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
+                // Exibe nome do usuário
+                if (typeof exibirUsuarioLogado === 'function') {
+                    exibirUsuarioLogado();
+                }
+            } else {
+                console.warn('⚠️ Sistema de autenticação não carregado');
+            }
+        });
+    </script>
 </body>
 </html>
