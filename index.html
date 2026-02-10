@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProShot Studio | Fotos Profissionais Corporativas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --secondary: #c9a962;
+            --accent: #8b7355;
+            --bg-dark: #0d0d0d;
+            --bg-light: #f8f6f3;
+            --text-light: #e8e8e8;
+            --text-muted: #888;
+            --gold-gradient: linear-gradient(135deg, #c9a962 0%, #e8d5a3 50%, #c9a962 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(13,13,13,0.95) 0%, transparent 100%);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(13,13,13,0.98);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--secondary);
+        }
+
+        .nav-cta {
+            padding: 0.75rem 2rem;
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--secondary);
+            color: var(--bg-dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 6rem 5% 4rem;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 30% 20%, rgba(201,169,98,0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(201,169,98,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1400px;
+            width: 100%;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            animation: fadeInUp 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            border: 1px solid var(--secondary);
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 500;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .hero h1 .highlight {
+            color: var(--secondary);
+            font-style: italic;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            font-weight: 300;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        .btn-primary {
+            padding: 1.1rem 2.5rem;
+            background: var(--gold-gradient);
+            border: none;
+            color: var(--bg-dark);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(201,169,98,0.3);
+        }
+
+        .btn-secondary {
+            padding: 1.1rem 2rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--text-light);
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .hero-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .hero-img-wrapper {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+        }
+
+        .hero-img-wrapper:first-child {
+            grid-row: span 2;
+        }
+
+        .hero-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .hero-img-wrapper:hover img {
+            transform: scale(1.05);
+        }
+
+        .hero-img-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(13,13,13,0.3) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .img-label {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            z-index: 2;
+            background: rgba(13,13,13,0.8);
+            padding: 0.4rem 0.8rem;
+        }
+
+        /* Trust Bar */
+        .trust-bar {
+            padding: 3rem 5%;
+            background: rgba(201,169,98,0.03);
+            border-top: 1px solid rgba(201,169,98,0.1);
+            border-bottom: 1px solid rgba(201,169,98,0.1);
+        }
+
+        .trust-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .trust-item {
+            text-align: center;
+        }
+
+        .trust-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--secondary);
+            line-height: 1;
+        }
+
+        .trust-label {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 8rem 5%;
+            background: var(--bg-dark);
+            position: relative;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 500;
+            line-height: 1.2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .problem-card {
+            padding: 2.5rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            background: rgba(201,169,98,0.05);
+            border-color: rgba(201,169,98,0.2);
+            transform: translateY(-5px);
+        }
+
+        .problem-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .problem-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .problem-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* Transformation Section */
+        .transformation {
+            padding: 8rem 5%;
+            background: linear-gradient(to bottom, var(--bg-dark) 0%, rgba(201,169,98,0.05) 100%);
+        }
+
+        .transformation-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .before-after {
+            position: relative;
+        }
+
+        .before-after-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .ba-img {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ba-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            aspect-ratio: 3/4;
+        }
+
+        .ba-label {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: rgba(13,13,13,0.9);
+        }
+
+        .ba-label.before {
+            color: var(--text-muted);
+        }
+
+        .ba-label.after {
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
+
+        .arrow-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--bg-dark);
+            z-index: 10;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .transformation-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 500;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        .transformation-text h2 .highlight {
+            color: var(--secondary);
+        }
+
+        .transformation-text p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .benefit-list {
+            list-style: none;
+            margin-bottom: 2.5rem;
+        }
+
+        .benefit-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .benefit-list .check {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* Gallery Section */
+        .gallery {
+            padding: 8rem 5%;
+            background: var(--bg-dark);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(13,13,13,0.8) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .gallery-item:hover::before {
+            opacity: 1;
+        }
+
+        .gallery-label {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .gallery-item:hover .gallery-label {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 8rem 5%;
+            background: linear-gradient(to bottom, var(--bg-dark) 0%, rgba(201,169,98,0.08) 50%, var(--bg-dark) 100%);
+            position: relative;
+        }
+
+        .pricing::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--secondary), transparent);
+        }
+
+        .pricing-card {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 4rem;
+            background: rgba(13,13,13,0.8);
+            border: 1px solid rgba(201,169,98,0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gold-gradient);
+        }
+
+        .pricing-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: var(--secondary);
+            color: var(--bg-dark);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .pricing-value {
+            margin-bottom: 2rem;
+        }
+
+        .price-old {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-current {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            color: var(--secondary);
+            line-height: 1;
+        }
+
+        .price-current span {
+            font-size: 1.5rem;
+            vertical-align: top;
+        }
+
+        .price-info {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+            margin: 2rem 0;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+        }
+
+        .pricing-features .icon {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .pricing-cta {
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--gold-gradient);
+            border: none;
+            color: var(--bg-dark);
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-cta:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 50px rgba(201,169,98,0.4);
+        }
+
+        .pricing-guarantee {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .guarantee-icon {
+            color: var(--secondary);
+        }
+
+        /* Urgency Banner */
+        .urgency-banner {
+            padding: 2rem 5%;
+            background: rgba(201,169,98,0.1);
+            border-top: 1px solid rgba(201,169,98,0.2);
+            border-bottom: 1px solid rgba(201,169,98,0.2);
+            text-align: center;
+        }
+
+        .urgency-text {
+            font-size: 1rem;
+            color: var(--secondary);
+        }
+
+        .urgency-text strong {
+            font-weight: 600;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 8rem 5%;
+            background: var(--bg-dark);
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            padding: 2.5rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .testimonial-stars {
+            color: var(--secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gold-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--bg-dark);
+        }
+
+        .author-info h4 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .author-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 8rem 5%;
+            background: linear-gradient(to bottom, var(--bg-dark) 0%, rgba(201,169,98,0.03) 100%);
+        }
+
+        .faq-grid {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem 0;
+        }
+
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Source Sans 3', sans-serif;
+        }
+
+        .faq-question:hover {
+            color: var(--secondary);
+        }
+
+        .faq-icon {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            padding-top: 1rem;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* Final CTA */
+        .final-cta {
+            padding: 8rem 5%;
+            background: linear-gradient(to bottom, rgba(201,169,98,0.05) 0%, var(--bg-dark) 100%);
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .final-cta h2 .highlight {
+            color: var(--secondary);
+            font-style: italic;
+        }
+
+        .final-cta p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 5%;
+            background: var(--bg-dark);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .footer p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-subtitle {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-cta-group {
+                justify-content: center;
+            }
+
+            .hero-images {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .problem-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .transformation-content {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-images {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-img-wrapper:first-child {
+                grid-row: auto;
+            }
+
+            .pricing-card {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .trust-content {
+                gap: 2rem;
+            }
+
+            .before-after-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .arrow-icon {
+                display: none;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Pulse animation for CTA */
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(201,169,98,0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(201,169,98,0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* ===== EFEITOS DE LUZ E PARTÍCULAS ===== */
+        
+        /* Cursor glow effect */
+        .cursor-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(201,169,98,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+            mix-blend-mode: screen;
+        }
+
+        /* Floating particles */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle 15s infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) scale(1);
+            }
+        }
+
+        /* Light beam effect */
+        .light-beam {
+            position: absolute;
+            width: 2px;
+            height: 200px;
+            background: linear-gradient(to bottom, transparent, rgba(201,169,98,0.3), transparent);
+            transform: rotate(-45deg);
+            animation: beamMove 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes beamMove {
+            0%, 100% {
+                opacity: 0;
+                transform: rotate(-45deg) translateX(-200px);
+            }
+            50% {
+                opacity: 1;
+                transform: rotate(-45deg) translateX(200px);
+            }
+        }
+
+        /* Hero glow orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(201,169,98,0.15);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .glow-orb-2 {
+            width: 200px;
+            height: 200px;
+            background: rgba(201,169,98,0.1);
+            bottom: 20%;
+            right: 15%;
+            animation-delay: -3s;
+        }
+
+        .glow-orb-3 {
+            width: 150px;
+            height: 150px;
+            background: rgba(139,115,85,0.12);
+            top: 50%;
+            left: 50%;
+            animation-delay: -6s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+            50% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+            75% {
+                transform: translate(20px, 10px) scale(1.05);
+            }
+        }
+
+        /* ===== BOTÕES ANIMADOS AVANÇADOS ===== */
+
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+            background: var(--gold-gradient);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite, pulse 2s infinite;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: var(--gold-gradient);
+            z-index: -1;
+            filter: blur(15px);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(201,169,98,0.4),
+                        0 0 30px rgba(201,169,98,0.2);
+            letter-spacing: 2px;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover::after {
+            opacity: 0.6;
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        /* Ripple effect on click */
+        .btn-primary .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Secondary button enhanced */
+        .btn-secondary {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(201,169,98,0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .btn-secondary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+            box-shadow: 0 0 30px rgba(201,169,98,0.2),
+                        inset 0 0 20px rgba(201,169,98,0.05);
+        }
+
+        /* Nav CTA enhanced */
+        .nav-cta {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .nav-cta::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: var(--secondary);
+            transition: height 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-cta:hover::before {
+            height: 100%;
+        }
+
+        .nav-cta:hover {
+            color: var(--bg-dark);
+            box-shadow: 0 10px 30px rgba(201,169,98,0.3);
+        }
+
+        /* ===== CARD HOVER EFFECTS ===== */
+
+        .problem-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .problem-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gold-gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .problem-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(201,169,98,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .problem-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .problem-card:hover::after {
+            opacity: 1;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3),
+                        0 0 40px rgba(201,169,98,0.1);
+        }
+
+        .problem-card:hover .problem-icon {
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 0 20px rgba(201,169,98,0.5));
+        }
+
+        .problem-icon {
+            transition: all 0.5s ease;
+            display: inline-block;
+        }
+
+        /* ===== IMAGE EFFECTS ===== */
+
+        .hero-img-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-img-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(201,169,98,0.2) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+        }
+
+        .hero-img-wrapper:hover::before {
+            opacity: 1;
+        }
+
+        .hero-img-wrapper:hover img {
+            transform: scale(1.08);
+            filter: brightness(1.1) contrast(1.05);
+        }
+
+        .hero-img-wrapper img {
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Gallery items enhanced */
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, 
+                rgba(13,13,13,0.9) 0%, 
+                rgba(13,13,13,0.3) 30%,
+                transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.15) rotate(2deg);
+            filter: brightness(1.1);
+        }
+
+        .gallery-item img {
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* ===== PRICING CARD GLOW ===== */
+
+        .pricing-card {
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .pricing-card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: var(--gold-gradient);
+            z-index: -1;
+            filter: blur(20px);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(201,169,98,0.5);
+        }
+
+        .pricing-card:hover::after {
+            opacity: 0.3;
+        }
+
+        .pricing-cta {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pricing-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(201,169,98,0.5),
+                        0 0 40px rgba(201,169,98,0.3);
+        }
+
+        /* ===== TESTIMONIAL CARDS ===== */
+
+        .testimonial-card {
+            position: relative;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .testimonial-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(201,169,98,0.05), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .testimonial-card:hover::before {
+            left: 100%;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(201,169,98,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .testimonial-stars {
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover .testimonial-stars {
+            text-shadow: 0 0 20px rgba(201,169,98,0.8);
+            letter-spacing: 4px;
+        }
+
+        /* ===== TEXT GLOW EFFECTS ===== */
+
+        .hero h1 .highlight,
+        .transformation-text h2 .highlight,
+        .final-cta h2 .highlight {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .hero h1 .highlight:hover,
+        .transformation-text h2 .highlight:hover,
+        .final-cta h2 .highlight:hover {
+            text-shadow: 0 0 30px rgba(201,169,98,0.6),
+                         0 0 60px rgba(201,169,98,0.3);
+        }
+
+        /* Price glow */
+        .price-current {
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover .price-current {
+            text-shadow: 0 0 40px rgba(201,169,98,0.6),
+                         0 0 80px rgba(201,169,98,0.3);
+        }
+
+        /* ===== SCROLL REVEAL ANIMATIONS ===== */
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .reveal-left.visible,
+        .reveal-right.visible,
+        .reveal-scale.visible {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        /* ===== LOADING ANIMATION ===== */
+
+        .page-loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            animation: logoReveal 1s ease forwards;
+        }
+
+        @keyframes logoReveal {
+            0% {
+                opacity: 0;
+                letter-spacing: 20px;
+            }
+            100% {
+                opacity: 1;
+                letter-spacing: 2px;
+            }
+        }
+
+        .loader-bar {
+            width: 200px;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loader-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: var(--gold-gradient);
+            animation: loadBar 1.5s ease forwards;
+        }
+
+        @keyframes loadBar {
+            to {
+                width: 100%;
+            }
+        }
+
+        /* ===== MAGNETIC BUTTON EFFECT (via JS) ===== */
+
+        .magnetic-btn {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="loader-logo">PROSHOT STUDIO</div>
+            <div class="loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- Cursor Glow -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Floating Particles -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">PROSHOT STUDIO</div>
+        <button class="nav-cta" onclick="scrollToSection('pricing')">Quero Minhas Fotos</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- Glow Orbs -->
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+        
+        <!-- Light Beams -->
+        <div class="light-beam" style="top: 20%; left: 10%;"></div>
+        <div class="light-beam" style="top: 60%; right: 20%; animation-delay: -4s;"></div>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <span class="hero-badge">Fotos Profissionais em 24h</span>
+                <h1>Sua imagem profissional <span class="highlight">sem sair de casa</span></h1>
+                <p class="hero-subtitle">Transformamos uma simples foto do seu celular em um portfólio executivo de alto padrão. A mesma qualidade de estúdios que cobram R$2.000 — por uma fração do valor.</p>
+                <div class="hero-cta-group">
+                    <button class="btn-primary pulse" onclick="scrollToSection('pricing')">Garantir Meu Pacote → R$197</button>
+                    <button class="btn-secondary" onclick="scrollToSection('gallery')">Ver Portfólio</button>
+                </div>
+            </div>
+            <div class="hero-images">
+                <div class="hero-img-wrapper">
+                    <img src="prolens-headshot_png__10_.jpeg" alt="Foto profissional corporativa">
+                    <span class="img-label">Resultado Final</span>
+                </div>
+                <div class="hero-img-wrapper">
+                    <img src="prolens-headshot_png__9_.jpeg" alt="Retrato executivo">
+                    <span class="img-label">Perfil Executivo</span>
+                </div>
+                <div class="hero-img-wrapper">
+                    <img src="prolens-headshot_png__11_.jpeg" alt="Foto de apresentação">
+                    <span class="img-label">Em Ação</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Bar -->
+    <div class="trust-bar">
+        <div class="trust-content">
+            <div class="trust-item">
+                <div class="trust-number">500+</div>
+                <div class="trust-label">Profissionais Atendidos</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-number">98%</div>
+                <div class="trust-label">Taxa de Satisfação</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-number">24h</div>
+                <div class="trust-label">Tempo de Entrega</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-number">15</div>
+                <div class="trust-label">Fotos por Pacote</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">O Problema</span>
+                <h2 class="section-title">Você está perdendo oportunidades por causa da sua foto de perfil?</h2>
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">📉</div>
+                    <h3>Primeira impressão fraca</h3>
+                    <p>Recrutadores levam 7 segundos para julgar seu perfil. Uma foto amadora pode custar aquela vaga dos sonhos antes mesmo de lerem seu currículo.</p>
+                </div>
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">💸</div>
+                    <h3>Estúdios caríssimos</h3>
+                    <p>Sessões profissionais custam R$800 a R$2.000. Fora o tempo perdido com agendamento, deslocamento e espera pela edição.</p>
+                </div>
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">😰</div>
+                    <h3>Desconforto em estúdio</h3>
+                    <p>Poses forçadas, iluminação artificial, fotógrafos dando comandos. O resultado? Fotos que não parecem você — parecem constrangidas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Transformation Section -->
+    <section class="transformation">
+        <div class="transformation-content">
+            <div class="before-after">
+                <div class="before-after-grid">
+                    <div class="ba-img">
+                        <img src="Gemini_Generated_Image_ca5qbxca5qbxca5q.png" alt="Foto antes - casual">
+                        <span class="ba-label before">Sua Foto</span>
+                    </div>
+                    <div class="ba-img">
+                        <img src="prolens-headshot_png__10_.jpeg" alt="Foto depois - profissional">
+                        <span class="ba-label after">Resultado</span>
+                    </div>
+                </div>
+                <div class="arrow-icon">→</div>
+            </div>
+            <div class="transformation-text">
+                <h2>De <span class="highlight">casual</span> para <span class="highlight">executivo</span> em 24 horas</h2>
+                <p>Nossa tecnologia proprietária analisa sua foto e cria variações profissionais que mantêm sua essência — mas elevam sua presença a outro patamar.</p>
+                <ul class="benefit-list">
+                    <li><span class="check">✓</span> Iluminação de estúdio profissional aplicada</li>
+                    <li><span class="check">✓</span> Vestuário executivo em diferentes estilos</li>
+                    <li><span class="check">✓</span> Poses naturais que transmitem confiança</li>
+                    <li><span class="check">✓</span> Cenários variados (estúdio, escritório, apresentação)</li>
+                    <li><span class="check">✓</span> Resolução HD pronta para LinkedIn, sites e impressão</li>
+                </ul>
+                <button class="btn-primary" onclick="scrollToSection('pricing')">Transformar Minha Imagem</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery" id="gallery">
+        <div class="section-header">
+            <span class="section-tag">Portfólio</span>
+            <h2 class="section-title">Resultados que falam por si</h2>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="prolens-headshot_png__9_.jpeg" alt="Resultado profissional">
+                <span class="gallery-label">Perfil Lateral</span>
+            </div>
+            <div class="gallery-item">
+                <img src="prolens-headshot_png__10_.jpeg" alt="Headshot executivo">
+                <span class="gallery-label">Headshot Clássico</span>
+            </div>
+            <div class="gallery-item">
+                <img src="prolens-headshot_png__11_.jpeg" alt="Foto corporativa">
+                <span class="gallery-label">Apresentação</span>
+            </div>
+            <div class="gallery-item">
+                <img src="prolens-headshot_png__9_.jpeg" alt="Retrato profissional">
+                <span class="gallery-label">Editorial</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Urgency Banner -->
+    <div class="urgency-banner">
+        <p class="urgency-text">⚡ <strong>Oferta por tempo limitado:</strong> Preço promocional de lançamento. Em breve volta para R$450.</p>
+    </div>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="section-header">
+            <span class="section-tag">Investimento</span>
+            <h2 class="section-title">Menos que um jantar. Resultados para a vida toda.</h2>
+        </div>
+        <div class="pricing-card fade-in">
+            <span class="pricing-badge">Mais Vendido</span>
+            <h3 class="pricing-title">Pacote Executivo Completo</h3>
+            <p class="pricing-subtitle">Tudo que você precisa para dominar sua presença profissional online</p>
+            <div class="pricing-value">
+                <p class="price-old">De R$450</p>
+                <p class="price-current"><span>R$</span>197</p>
+                <p class="price-info">Pagamento único • Sem mensalidades</p>
+            </div>
+            <ul class="pricing-features">
+                <li><span class="icon">✓</span> 20 fotos profissionais em alta resolução</li>
+                <li><span class="icon">✓</span> Estilos diferentes de vestuário</li>
+                <li><span class="icon">✓</span> Vários cenários distintos (estúdio, escritório, apresentação)</li>
+                <li><span class="icon">✓</span> Edição profissional incluída</li>
+                <li><span class="icon">✓</span> Entrega em até 24 horas</li>
+                <li><span class="icon">✓</span> Formato otimizado para LinkedIn, sites e impressão</li>
+                <li><span class="icon">✓</span> 1 revisão gratuita inclusa</li>
+            </ul>
+            <button class="pricing-cta pulse" onclick="openWhatsApp()">Quero Minhas Fotos Agora →</button>
+            <p class="pricing-guarantee">
+                <span class="guarantee-icon">🔒</span>
+                Garantia de satisfação ou seu dinheiro de volta
+            </p>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="section-header">
+            <span class="section-tag">Depoimentos</span>
+            <h2 class="section-title">O que nossos clientes dizem</h2>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">"Achei que seria genérico, mas ficou incrivelmente natural. Usei no LinkedIn e em 2 semanas recebi 3 propostas de headhunters. Melhor investimento que fiz."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">R</div>
+                    <div class="author-info">
+                        <h4>Ricardo M.</h4>
+                        <p>Gerente de Projetos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">"Paguei R$1.200 em um estúdio no ano passado e o resultado não foi tão bom quanto esse. Sem falar que foi tudo online, sem estresse nenhum."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">A</div>
+                    <div class="author-info">
+                        <h4>Amanda L.</h4>
+                        <p>Advogada</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">"Como consultor, minha imagem é meu cartão de visitas. As fotos ficaram exatamente como eu imaginava — profissionais mas acessíveis. Super recomendo."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">P</div>
+                    <div class="author-info">
+                        <h4>Pedro S.</h4>
+                        <p>Consultor Financeiro</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="section-header">
+            <span class="section-tag">Dúvidas Frequentes</span>
+            <h2 class="section-title">Perguntas comuns respondidas</h2>
+        </div>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>Como funciona o processo?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Simples: você envia uma foto nítida do seu rosto (pode ser de celular), escolhe os estilos que prefere, e em até 24 horas recebe suas 20 fotos profissionais por email. Sem complicação.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>As fotos ficam naturais ou parecem "fake"?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Nossa tecnologia é treinada para manter suas características únicas. O resultado são fotos que parecem você — só que em um ambiente profissional com iluminação perfeita. Nada de rostos estranhos ou artificiais.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>E se eu não gostar do resultado?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Você tem direito a uma revisão gratuita. Se mesmo assim não ficar satisfeito, devolvemos 100% do seu dinheiro. Simples assim. Nosso compromisso é com sua satisfação.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>Posso usar as fotos comercialmente?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Sim! As fotos são 100% suas para usar onde quiser: LinkedIn, sites profissionais, cartões de visita, apresentações, materiais de marketing. Sem restrições.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>Qual foto devo enviar?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Uma foto frontal com boa iluminação (luz natural é ideal), rosto bem visível e expressão neutra ou com leve sorriso. Não precisa ser profissional — uma boa selfie já funciona.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <h2>Sua próxima oportunidade pode depender de uma <span class="highlight">primeira impressão</span></h2>
+        <p>Enquanto você hesita, outros profissionais já estão se posicionando com imagens de alto padrão. Não deixe sua foto de perfil ser o motivo de perder aquela vaga, cliente ou parceria.</p>
+        <button class="btn-primary pulse" onclick="openWhatsApp()">Garantir Meu Pacote por R$197 →</button>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">PROSHOT STUDIO</div>
+        <p>© 2025 ProShot Studio. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // ===== PAGE LOADER =====
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('pageLoader').classList.add('hidden');
+            }, 1800);
+        });
+
+        // ===== CURSOR GLOW EFFECT =====
+        const cursorGlow = document.getElementById('cursorGlow');
+        let mouseX = 0, mouseY = 0;
+        let glowX = 0, glowY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursorGlow() {
+            glowX += (mouseX - glowX) * 0.1;
+            glowY += (mouseY - glowY) * 0.1;
+            cursorGlow.style.left = glowX + 'px';
+            cursorGlow.style.top = glowY + 'px';
+            requestAnimationFrame(animateCursorGlow);
+        }
+        animateCursorGlow();
+
+        // Hide cursor glow on mobile
+        if (window.innerWidth < 768) {
+            cursorGlow.style.display = 'none';
+        }
+
+        // ===== FLOATING PARTICLES =====
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.width = (Math.random() * 4 + 2) + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.opacity = Math.random() * 0.5 + 0.2;
+            particlesContainer.appendChild(particle);
+        }
+
+        // ===== NAVBAR SCROLL EFFECT =====
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ===== SMOOTH SCROLL =====
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ===== FAQ TOGGLE =====
+        function toggleFaq(button) {
+            const item = button.parentElement;
+            // Close others
+            document.querySelectorAll('.faq-item.active').forEach(el => {
+                if (el !== item) el.classList.remove('active');
+            });
+            item.classList.toggle('active');
+        }
+
+        // ===== WHATSAPP REDIRECT =====
+        function openWhatsApp() {
+            const message = encodeURIComponent("Olá! Tenho interesse no Pacote Executivo de fotos profissionais por R$197. Gostaria de mais informações.");
+            window.open(`https://pay.kiwify.com.br/peF3UeF`, '_blank');
+        }
+
+        // ===== RIPPLE EFFECT ON BUTTONS =====
+        document.querySelectorAll('.btn-primary, .pricing-cta').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = e.clientX - rect.left - size / 2 + 'px';
+                ripple.style.top = e.clientY - rect.top - size / 2 + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // ===== MAGNETIC BUTTON EFFECT =====
+        document.querySelectorAll('.btn-primary, .btn-secondary, .nav-cta, .pricing-cta').forEach(btn => {
+            btn.classList.add('magnetic-btn');
+            
+            btn.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                this.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // ===== SCROLL REVEAL ANIMATIONS =====
+        const revealElements = document.querySelectorAll('.fade-in, .reveal-left, .reveal-right, .reveal-scale');
+        
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // ===== PARALLAX EFFECT ON GLOW ORBS =====
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.glow-orb');
+            const x = e.clientX / window.innerWidth - 0.5;
+            const y = e.clientY / window.innerHeight - 0.5;
+            
+            orbs.forEach((orb, i) => {
+                const speed = (i + 1) * 20;
+                orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+
+        // ===== TYPING EFFECT FOR HERO BADGE =====
+        const badge = document.querySelector('.hero-badge');
+        if (badge) {
+            const text = badge.textContent;
+            badge.textContent = '';
+            badge.style.opacity = '1';
+            let i = 0;
+            const typeWriter = () => {
+                if (i < text.length) {
+                    badge.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 50);
+                }
+            };
+            setTimeout(typeWriter, 2000);
+        }
+
+        // ===== IMAGE TILT EFFECT =====
+        document.querySelectorAll('.hero-img-wrapper, .gallery-item').forEach(item => {
+            item.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // ===== COUNTER ANIMATION =====
+        const counters = document.querySelectorAll('.trust-number');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const finalValue = target.textContent;
+                    const isPercentage = finalValue.includes('%');
+                    const isPlus = finalValue.includes('+');
+                    const numericValue = parseInt(finalValue.replace(/[^0-9]/g, ''));
+                    
+                    let current = 0;
+                    const increment = numericValue / 60;
+                    const duration = 2000;
+                    const stepTime = duration / 60;
+                    
+                    const updateCounter = () => {
+                        current += increment;
+                        if (current < numericValue) {
+                            target.textContent = Math.floor(current) + (isPercentage ? '%' : '') + (isPlus ? '+' : '');
+                            setTimeout(updateCounter, stepTime);
+                        } else {
+                            target.textContent = finalValue;
+                        }
+                    };
+                    
+                    updateCounter();
+                    counterObserver.unobserve(target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(counter => counterObserver.observe(counter));
+
+        // ===== SMOOTH SCROLL PROGRESS BAR =====
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #c9a962, #e8d5a3);
+            z-index: 10001;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px rgba(201,169,98,0.5);
+        `;
+        document.body.appendChild(progressBar);
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            progressBar.style.width = scrollPercent + '%';
+        });
+    </script>
+</body>
+</html>
